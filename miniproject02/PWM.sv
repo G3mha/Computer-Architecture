@@ -1,21 +1,15 @@
-module PWM #(
-    parameter WIDTH = 8, // PWM resolution
-    parameter ACTIVE_LOW = 1
+module pwm #(
+    parameter PWM_WIDTH = 8
 )(
     input  logic clk,
-    input  logic [WIDTH-1:0] duty,
-    output logic pwm_out
+    input  logic [7:0] duty_cycle,
+    output logic pwm_signal
 );
-    logic [WIDTH-1:0] counter;
+    logic [PWM_WIDTH-1:0] counter = 0;
 
     always_ff @(posedge clk) begin
         counter <= counter + 1;
     end
-    
-    always_comb begin
-        if (ACTIVE_LOW)
-            pwm_out = (counter < duty) ? 1'b0 : 1'b1;
-        else
-            pwm_out = (counter < duty) ? 1'b1 : 1'b0;
-    end
+
+    assign pwm_signal = (counter < duty_cycle);
 endmodule
