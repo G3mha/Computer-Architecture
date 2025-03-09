@@ -1,38 +1,48 @@
-# ENGR 3410: Miniproject 2
+# Miniproject 2
 
-due February 27, 2025
+Author: Enricco Gemha
 
-In this miniproject, you will use the OSS CAD suite to design a digital circuit to drive the RGB LED on your iceBlinkPico board so that it smoothly cycles through the colors around the HSV color wheel (shown below on the left) once per second by driving the individual LEDs using pulse width modulation (PWM) according to the waveforms shown below on the right.
+Date: Mar 2nd, 2025
 
-- The HSV color wheel:
+Link to demo video: [Miniproject 2 Demo](https://youtube.com/shorts/flgAmWVJgnE)
 
-![HSV color wheel](./assets/img1.png)
+To check the assignment instructions, please refer to the [assignment page](./instructions.md).
 
-- RGB components versus hue angle, H:
+## Design Overview
 
-![RGB components versus hue angle](./assets/img2.png)
+The circuit makes the RGB LED on the iceBlinkPico board cycle through all colors on the HSV wheel, by changing the brightness of the red, green, and blue LEDs over time to mix and create different colors.
 
-This miniproject is an individual one. You can discuss design approaches and help each other with learning SystemVerilog and how to use the OSS CAD suite, but each of you must complete all aspects of this assignment in order to learn how to use the tools. In the process, you should learn several aspects of the processes and software tools that you will be using later in the semester to design more complex digital circuits.
+## How It Works
 
-## Requirements
+The two main components of the circuit are:
 
-Your design must meet the following requirements:
+1. **HSV Wheel Module**: Calculates what color to show at each moment. It divides the color wheel into 360 steps and goes through them to complete one full cycle per second.
 
-1. Your circuit must repeatedly drive the RGB LED on your iceBlinkPico board with
-PWM signals to cycle smoothly through the colors around the HSV color wheel once
-per second according to the waveforms shown above.
+2. **PWM Module**: Controls the brightness of each LED. When a value is 255, the LED is at full brightness, and when it's 0, the LED is off.
 
-2. Your circuit must be specified in one or more SystemVerilog source files.
+## Circuit Operation
 
-3. You must provide a SystemVerilog test bench and simulation results using Icarus Verilog (iverilog) showing at least one complete cycle of your circuit’s operation.
+The HSV color wheel is divided into 6 regions:
 
-## Deliverables
+- Region 0: Red → Yellow (Red ━, Green ↑)
+- Region 1: Yellow → Green (Red ↓, Green ━)
+- Region 2: Green → Cyan (Green ━, Blue ↑)
+- Region 3: Cyan → Blue (Green ↓, Blue ━)
+- Region 4: Blue → Magenta (Blue ━, Red ↑)
+- Region 5: Magenta → Red (Blue ↓, Red ━)
 
-By the start of class on February 27, you must submit the following items
-to the course Canvas site:
+The circuit's position counter goes from 0 to 359, and based on it calculates the right brightness for each LED.
 
-1. A PDF file containing a brief report explaining the design of your circuit and its operation. You should include a screen grab of a gtkwave plot showing the simulation of the RGB signal components changing as a function of time in your circuit.
+## Simulation Results
 
-2. Copies of all of the source files specifying your circuit as well as your test bench. You may provide the URL of a Github repo or a shared folder containing your source files.
+![GTKwave plot showing RGB signals](./img/simulation_waveform.png)
 
-3. A video demo of your circuit working on your iceBlinkPico board.
+In this plot:
+
+- The red, green, and blue values change smoothly over time
+- One complete cycle takes 1 second
+- The RGB values match what we expect for HSV color conversion
+
+## Conclusion
+
+This circuit successfully creates a smooth color wheel effect by using PWM to control LED brightness in the iceBlinkPico board's RGB LED.
