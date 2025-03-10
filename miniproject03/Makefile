@@ -11,7 +11,3 @@ prog: #for sram
 
 clean:
 	rm -rf $(filename).blif $(filename).asc $(filename).json $(filename).bin
-# test:
-# 	iverilog -g2012 -o hsv_wheel_sim testbench.sv
-# 	vvp hsv_wheel_sim
-# 	gtkwave hsv_wheel_tb.vcd
