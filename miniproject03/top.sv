@@ -1,4 +1,4 @@
-`include "quarter_memory.sv"
+`include "memory.sv"
 
 module top(
     input  logic clk, 
