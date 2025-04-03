@@ -7,7 +7,6 @@ module mux_2x1 #(
     output logic [WIDTH-1:0] out     // Output
 );
 
-    // Select between inputs based on sel signal
     assign out = sel ? in1 : in0;
 
 endmodule
