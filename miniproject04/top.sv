@@ -1,8 +1,8 @@
 // Top-level module for RV32I Single-Cycle Processor
 
 module top (
-    input  logic clk,
-    input  logic reset
+  input  logic clk,
+  input  logic reset
 );
 
 // === Instruction Register ===
@@ -20,25 +20,49 @@ logic reg_write, mem_read, mem_write, branch, jump;
 logic [1:0]  alu_src, mem_to_reg;
 
 instruction_decoder decoder (
-        .instruction(instruction),
-        .alu_op(alu_op),
-        .reg_write(reg_write),
-        .alu_src(alu_src),
-        .mem_read(mem_read),
-        .mem_write(mem_write),
-        .mem_to_reg(mem_to_reg),
-        .branch(branch),
-        .jump(jump)
-    );
+  .instruction(instruction),
+  .alu_op(alu_op),
+  .reg_write(reg_write),
+  .alu_src(alu_src),
+  .mem_read(mem_read),
+  .mem_write(mem_write),
+  .mem_to_reg(mem_to_reg),
+  .branch(branch),
+  .jump(jump)
+);
 
 // === Immediate Generator ===
 logic [31:0] imm_ext;
 
 ImmGen immgen (
-        .Opcode(opcode),
-        .instruction(instruction),
-        .ImmExt(imm_ext)
-    );
+  .Opcode(opcode),
+  .instruction(instruction),
+  .ImmExt(imm_ext)
+);
+
+// === Memory Unit ===
+logic [2:0] mem_funct3;
+logic [31:0] read_data;
+logic [31:0] write_data;
+logic [31:0] write_address;
+logic [31:0] read_address;
+logic [31:0] mem_data;
+
+assign mem_funct3 = (state == FETCH) ? 3'b010 : instruction[14:12];
+
+memory mem_unit (
+  .clk(clk),
+  .write_mem(mem_write),
+  .funct3(mem_funct3),
+  .write_address(alu_result),
+  .write_data(rs2_data),
+  .read_address(mem_read_addr),
+  .read_data(mem_read_data),
+  .led(led),
+  .red(red),
+  .green(green),
+  .blue(blue)
+);
 
 // Program Logic
 program_counter pc (
@@ -58,11 +82,11 @@ pc_adder pc_incr (
 
 // ALU
 alu alu_unit (
-    .a(op1),
-    .b(op2),
-    .alu_op(alu_op),
-    .result(alu_result),
-    .zero_flag(zero_flag)
+  .a(op1),
+  .b(op2),
+  .alu_op(alu_op),
+  .result(alu_result),
+  .zero_flag(zero_flag)
 )
 // Muxes
 mux_2x1 pc_mux (
@@ -97,13 +121,12 @@ mux_2x1 op2_mux (
 )
 
 mux_4x1 rdv_mux (
-    //TODO: Implement the mux for the register data value selection
-    .in0(imm_ext),
-    .in1(alu_result),
-    .in2(),
-    .in3(pc_adder),
-    .sel(),
-    .out(rdv_mux_out)
+  .in0(imm_ext),
+  .in1(alu_result),
+  .in2(pc_adder),
+  .in3(mem_read_data),
+  .sel(mem_to_reg),
+  .out(rdv_mux_out)
 )
 
 endmodule
