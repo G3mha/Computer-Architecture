@@ -33,6 +33,7 @@ module instruction_decoder(
         case (opcode)
             7'b0110011: begin // R-type instructions
                 reg_write = 1'b1;
+                alu_src   = 2'b00; //Use for R-type
                 // Determine ALU operation based on funct3 and funct7
                 case (funct3)
                     3'b000: alu_op = (funct7[5]) ? 4'b0001 : 4'b0000; // SUB : ADD
@@ -45,7 +46,22 @@ module instruction_decoder(
                     3'b111: alu_op = 4'b0010; // AND
                 endcase
             end
-            
+
+            7'b0010011: begin // I-type instructions
+                reg_write = 1'b1;
+                alu_src   = 2'b01; // Use for immediate 
+                case (funct3)
+                    3'b000: alu_op = 4'b0000; // ADDI
+                    3'b010: alu_op = 4'b1000; // SLTI
+                    3'b011: alu_op = 4'b1001; // SLTIU
+                    3'b100: alu_op = 4'b0100; // XORI
+                    3'b110: alu_op = 4'b0011; // ORI
+                    3'b111: alu_op = 4'b0010; // ANDI
+                    3'b001: alu_op = 4'b; // SLLI
+
+
+
+
             // Add other instruction types (I-type, S-type, etc.)
             
         endcase
