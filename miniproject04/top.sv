@@ -5,6 +5,26 @@ module top (
   input  logic reset
 );
 
+// === Program Counter ==
+logic [31:0] pc,
+logic [31:0] pc_next,
+logic [31:0] pc_plus_4,
+pc_write = 1'b1;
+
+program_counter pc (
+.clk(clk),
+.reset(reset),
+.pc_write(pc_write),
+.pc_in(pc_next),
+.pc_out(pc)
+    );
+
+pc_adder pc_incr (
+    .pc(pc)
+    .imm(32'd4),
+    .pc_plus_4(pc_plus_4)
+)
+
 // === Instruction Memory ===
 logic [31:0] instruction_mem_data;
 
@@ -13,8 +33,10 @@ instruction_memory instruction_mem (
     .instruction(instruction_mem_data)
 );
 
-
 // === Instruction Register ===
+logic [31:0] instruction;
+logic ir_write = 1'b1,
+
 instruction_register ir (
         .clk(clk),
         .reset(reset),
@@ -42,6 +64,7 @@ instruction_decoder decoder (
 
 // === Immediate Generator ===
 logic [31:0] imm_ext;
+logic [6:0] opcode = instruction[6:0];
 
 ImmGen immgen (
   .Opcode(opcode),
@@ -49,50 +72,47 @@ ImmGen immgen (
   .ImmExt(imm_ext)
 );
 
-// === Memory Unit ===
-logic [2:0] mem_funct3;
-logic [31:0] read_data;
-logic [31:0] write_data;
-logic [31:0] write_address;
-logic [31:0] read_address;
-logic [31:0] mem_data;
+// === Register File ===
+logic [31:0] rs1_data, rs2_data;
+logic [31:0] rdv_mux_out;
 
-assign mem_funct3 = (state == FETCH) ? 3'b010 : instruction[14:12];
+reg_file reg_file (
+  .clk(clk),
+  .reset(reset),
+  .reg_write(reg_write),
+  .rs1_addr(instruction[19:15]),
+  .rs2_addr(instruction[24:20]),
+  .rd_addr(instruction[11:7]),
+  .rd_data(rdv_mux_out),
+  .rs1_data(rs1_data),
+  .rs2_data(rs2_data)
+);
+
+// === Memory Unit ===
+logic [31:0] read_data;
 
 memory mem_unit (
   .clk(clk),
   .write_mem(mem_write),
-  .funct3(mem_funct3),
+  .funct3(instruction[14:12]),
   .write_address(alu_result),
   .write_data(rs2_data),
-  .read_address(mem_read_addr),
+  .read_address(ra_mux_out),
   .read_data(mem_read_data),
-  .led(led),
-  .red(red),
-  .green(green),
-  .blue(blue)
+  .led(),
+  .red(),
+  .green(),
+  .blue()
 );
 
-// Program Logic
-program_counter pc (
-logic [31:0] pc
+// === ALU ===
+logic [31:0] alu_result;
+logic zero_flag;
+logic [31:0] op1_mux_out, op2_mux_out;
 
-.clk(clk),
-.reset(reset),
-.pc_write(pc_write),
-.pc_in(pc_next),
-    );
-
-pc_adder pc_incr (
-    logic [31:0] pc_plus_4,
-
-    .pc(pc)
-)
-
-// ALU
 alu alu_unit (
-  .a(op1),
-  .b(op2),
+  .a(op1_mux_out),
+  .b(op2_mux_out),
   .alu_op(alu_op),
   .result(alu_result),
   .zero_flag(zero_flag)
@@ -114,15 +134,15 @@ mux_2x1 RA_mux (
 
 mux_2x1 op1_mux (
     .in0(pc),
-    .in1(rs1),
-    .sel(alu_src),
+    .in1(rs1_data),
+    .sel(alu_src[0]),
     .out(op1_mux_out)
 )
 
 mux_2x1 op2_mux (
     .in0(rs2_data),
     .in1(imm_ext),
-    .sel(alu_src),
+    .sel(alu_src[0]),
     .out(op2_mux_out)
 )
 
