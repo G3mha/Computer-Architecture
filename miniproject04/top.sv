@@ -5,6 +5,15 @@ module top (
   input  logic reset
 );
 
+// === Instruction Memory ===
+logic [31:0] instruction_mem_data;
+
+instruction_memory instruction_mem (
+    .address(pc),
+    .instruction(instruction_mem_data)
+);
+
+
 // === Instruction Register ===
 instruction_register ir (
         .clk(clk),
@@ -88,7 +97,7 @@ alu alu_unit (
   .result(alu_result),
   .zero_flag(zero_flag)
 )
-// Muxes
+// Mux's
 mux_2x1 pc_mux (
     .in0(pc_plus_4),
     .in1(alu_result),
@@ -97,7 +106,6 @@ mux_2x1 pc_mux (
 )
 
 mux_2x1 RA_mux (
-// TODO: Implement the mux for the register address selection
     .in0(pc),
     .in1(alu_result),
     .sel(jump),
@@ -105,18 +113,16 @@ mux_2x1 RA_mux (
 )
 
 mux_2x1 op1_mux (
-// TODO: Implement the mux for the first operand selection
     .in0(pc),
-    .in1(),
-    .sel(),
+    .in1(rs1),
+    .sel(alu_src),
     .out(op1_mux_out)
 )
 
 mux_2x1 op2_mux (
-// TODO: Implement the mux for the second operand selection
-    .in0(),
-    .in1(),
-    .sel(),
+    .in0(rs2_data),
+    .in1(imm_ext),
+    .sel(alu_src),
     .out(op2_mux_out)
 )
 
