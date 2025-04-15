@@ -20,9 +20,27 @@ module top (
 logic [31:0] pc;
 logic [31:0] pc_next;
 logic [31:0] pc_plus_4;
-logic pc_write = 1'b1;
+logic pc_write = 1'b1;  // Always enabled for single-cycle
+
+// === Instruction Memory and Decoding ===
+logic [31:0] instruction_mem_data;
+logic [31:0] instruction;
+logic ir_write = 1'b1;  // Always enabled for single-cycle
+
+// === ALU and Datapath Signals ===
+logic [31:0] rs1_data, rs2_data;
+logic [3:0] alu_op;
+logic [31:0] alu_result;
+logic zero_flag;
+logic [31:0] op1_mux_out, op2_mux_out;
+
+// === Control Signals ===
+logic reg_write, mem_read, mem_write, branch, jump;
+logic [1:0] alu_src, mem_to_reg;
+logic take_branch;
+logic [31:0] imm_ext;
 logic [31:0] mem_read_data;
-logic [31:0] ra_mux_out;
+logic [31:0] write_data;
 
 // === Program Counter ===
 program_counter pc_unit (
@@ -40,17 +58,12 @@ pc_adder pc_incr (
 );
 
 // === Instruction Memory ===
-logic [31:0] instruction_mem_data;
-
 instruction_memory instruction_mem (
   .address(pc),
   .instruction(instruction_mem_data)
 );
 
 // === Instruction Register ===
-logic [31:0] instruction;
-logic ir_write = 1'b1;
-
 instruction_register ir (
   .clk(clk),
   .reset(reset),
@@ -60,10 +73,6 @@ instruction_register ir (
 );
 
 // === Instruction Decoder ===
-logic [3:0]  alu_op;
-logic reg_write, mem_read, mem_write, branch, jump;
-logic [1:0]  alu_src, mem_to_reg;
-
 instruction_decoder decoder (
   .instruction(instruction),
   .alu_op(alu_op),
@@ -77,19 +86,13 @@ instruction_decoder decoder (
 );
 
 // === Immediate Generator ===
-logic [31:0] imm_ext;
-logic [6:0] opcode = instruction[6:0];
-
 ImmGen immgen (
-  .Opcode(opcode),
+  .Opcode(instruction[6:0]),
   .instruction(instruction),
   .ImmExt(imm_ext)
 );
 
 // === Register File ===
-logic [31:0] rs1_data, rs2_data;
-logic [31:0] rdv_mux_out;
-
 register_file registers (
   .clk(clk),
   .reset(reset),
@@ -97,16 +100,29 @@ register_file registers (
   .rs1_addr(instruction[19:15]),
   .rs2_addr(instruction[24:20]),
   .rd_addr(instruction[11:7]),
-  .rd_data(rdv_mux_out),
+  .rd_data(write_data),
   .rs1_data(rs1_data),
   .rs2_data(rs2_data)
 );
 
-// === ALU ===
-logic [31:0] alu_result;
-logic zero_flag;
-logic [31:0] op1_mux_out, op2_mux_out;
+// === ALU Input Muxes ===
+// alu_src[0]: 0=rs1_data, 1=pc
+mux_2x1 op1_mux (
+  .in0(rs1_data),
+  .in1(pc),
+  .sel(alu_src[0]),
+  .out(op1_mux_out)
+);
 
+// alu_src[1]: 0=rs2_data, 1=imm_ext  
+mux_2x1 op2_mux (
+  .in0(rs2_data),
+  .in1(imm_ext),
+  .sel(alu_src[1]),
+  .out(op2_mux_out)
+);
+
+// === ALU ===
 alu alu_unit (
   .a(op1_mux_out),
   .b(op2_mux_out),
@@ -116,7 +132,9 @@ alu alu_unit (
 );
 
 // === Memory Unit ===
-memory mem_unit (
+memory #(
+  .INIT_FILE("program.mem")
+) mem_unit (
   .clk(clk),
   .write_mem(mem_write),
   .funct3(instruction[14:12]),
@@ -130,8 +148,7 @@ memory mem_unit (
   .blue()
 );
 
-// === Multiplexers ===
-logic take_branch = branch && zero_flag;
+assign take_branch = branch && zero_flag;
 
 mux_2x1 pc_mux (
   .in0(pc_plus_4),
@@ -140,27 +157,14 @@ mux_2x1 pc_mux (
   .out(pc_next)
 );
 
-mux_2x1 op1_mux (
-  .in0(rs1_data),
-  .in1(pc),
-  .sel(alu_src[0]),
-  .out(op1_mux_out)
-);
-
-mux_2x1 op2_mux (
-  .in0(rs2_data),
-  .in1(imm_ext),
-  .sel(alu_src[1]),
-  .out(op2_mux_out)
-);
-
+// === Register Write-back MUX ===
 mux_4x1 rdv_mux (
-  .in0(imm_ext),
-  .in1(alu_result),
-  .in2(pc_plus_4),
-  .in3(mem_read_data),
+  .in0(imm_ext),     // For LUI
+  .in1(alu_result),  // For most ALU ops
+  .in2(pc_plus_4),   // For JAL/JALR
+  .in3(mem_read_data), // For loads
   .sel(mem_to_reg),
-  .out(rdv_mux_out)
+  .out(write_data)
 );
 
 endmodule
