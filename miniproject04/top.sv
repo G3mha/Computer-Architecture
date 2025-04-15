@@ -131,16 +131,18 @@ memory mem_unit (
 );
 
 // === Multiplexers ===
+logic take_branch = branch && zero_flag;
+
 mux_2x1 pc_mux (
   .in0(pc_plus_4),
   .in1(alu_result),
-  .sel(jump),
+  .sel(take_branch || jump),
   .out(pc_next)
 );
 
 mux_2x1 op1_mux (
-  .in0(pc),
-  .in1(rs1_data),
+  .in0(rs1_data),
+  .in1(pc),
   .sel(alu_src[0]),
   .out(op1_mux_out)
 );

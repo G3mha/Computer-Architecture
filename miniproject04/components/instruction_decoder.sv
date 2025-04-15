@@ -33,7 +33,9 @@ module instruction_decoder(
         case (opcode)
             7'b0110011: begin // R-type instructions
                 reg_write = 1'b1;
-                alu_src   = 2'b00; //Use for R-type to be changed 
+                alu_src   = 2'b00;  // Use rs1_data and rs2_data
+                mem_to_reg = 2'b01; // Select ALU result
+                
                 // Determine ALU operation based on funct3 and funct7
                 case (funct3)
                     3'b000: alu_op = (funct7[5]) ? 4'b0001 : 4'b0000; // SUB : ADD
@@ -47,12 +49,14 @@ module instruction_decoder(
                 endcase
             end
 
-            7'b0010011: begin // I-type instructions
+            7'b0010011: begin // I-type arithmetic instructions
                 reg_write = 1'b1;
-                alu_src   = 2'b01; // Use for immediate  to be changed 
+                alu_src   = 2'b10;  // Use rs1_data and imm_ext
+                mem_to_reg = 2'b01; // Select ALU result
+                
                 case (funct3)
                     3'b000: alu_op = 4'b0000; // ADDI
-                    3'b001: alu_op = 4'b1000; // SLLI
+                    3'b001: alu_op = 4'b0101; // SLLI
                     3'b010: alu_op = 4'b1000; // SLTI
                     3'b011: alu_op = 4'b1001; // SLTIU
                     3'b100: alu_op = 4'b0100; // XORI
@@ -64,75 +68,68 @@ module instruction_decoder(
 
             7'b0000011: begin // I-type Load instructions (e.g., LW)
                 reg_write = 1'b1;
-                alu_src   = 2'b01;  // Use immediate to be changed
-
-                alu_op    = 4'b0000;// load is add
-                mem_read  = 1'b1;   //Load need read mem
-                mem_write = 1'b0;   //Load no write mem
-                mem_to_reg = 2'b11; // to be changed
+                alu_src   = 2'b10;  // Use rs1_data and imm_ext
+                alu_op    = 4'b0000; // ADD for address calculation
+                mem_read  = 1'b1;    // Enable memory read
+                mem_write = 1'b0;    // Disable memory write
+                mem_to_reg = 2'b11;  // Select memory data
             end
 
             7'b0100011: begin // S-type instructions (Store instructions, e.g., SW)
-                reg_write = 1'b0;
-                alu_src   = 2'b01;  // Use immediate to be changed
-
-                alu_op    = 4'b0000;// store uses add 
-                mem_read  = 1'b0;   //store no read mem
-                mem_write = 1'b1;   //store need write mem
-                mem_to_reg = 2'b00; // no need lah to be changed
+                reg_write = 1'b0;    // No register write
+                alu_src   = 2'b10;   // Use rs1_data and imm_ext
+                alu_op    = 4'b0000; // ADD for address calculation
+                mem_read  = 1'b0;    // Disable memory read
+                mem_write = 1'b1;    // Enable memory write
+                mem_to_reg = 2'b00;  // Not used for store
             end
 
             7'b1100011: begin // B-type instructions
-                reg_write = 1'b0;   // no need write
-                alu_src   = 2'b00;  // Use for R-type to be changed
-
-                alu_op    = 4'b0001;// SUB for branching 
-                mem_read  = 1'b0;   // no mem
-                mem_write = 1'b0;   // no mem
-                mem_to_reg = 2'b00; // Not used to be changed
-                branch    = 1'b1;   //branch 
+                reg_write = 1'b0;    // No register write
+                alu_src   = 2'b00;   // Use rs1_data and rs2_data
+                alu_op    = 4'b0001; // SUB for comparison
+                mem_read  = 1'b0;    // No memory access
+                mem_write = 1'b0;    // No memory access
+                mem_to_reg = 2'b00;  // Not used for branch
+                branch    = 1'b1;    // Enable branch
             end
 
             7'b0010111: begin // U-type instruction: AUIPC
-                reg_write = 1'b1;
-                alu_src   = 2'b01; // Use immediate
-
-                alu_op    = 4'b0000;// ADD since rd ← pc + imm u, pc ← pc+4
-                mem_read  = 1'b0;   // no mem
-                mem_write = 1'b0;   // no mem
-                mem_to_reg = 2'b01; // to be changed 
+                reg_write = 1'b1;    // Write to register
+                alu_src   = 2'b11;   // Use PC and imm_ext
+                alu_op    = 4'b0000; // ADD PC and immediate
+                mem_read  = 1'b0;    // No memory access
+                mem_write = 1'b0;    // No memory access
+                mem_to_reg = 2'b01;  // Select ALU result
             end
 
             7'b0110111: begin // U-type instruction: LUI
-                reg_write = 1'b1;
-                alu_src   = 2'b00; // Not used immed
-
-                alu_op    = 4'b0000; // rd ← imm u, pc ← pc+4
-                mem_read  = 1'b0;   //not used
-                mem_write = 1'b0;   //not used
-                mem_to_reg = 2'b00; // Directly use (from ImmGen) for register write-back to be changed 
+                reg_write = 1'b1;    // Write to register
+                alu_src   = 2'b00;   // Not used for ALU
+                alu_op    = 4'b0000; // Not used
+                mem_read  = 1'b0;    // No memory access
+                mem_write = 1'b0;    // No memory access
+                mem_to_reg = 2'b00;  // Select immediate value
             end
 
             7'b1101111: begin // J-type instruction: JAL
-                reg_write = 1'b1;
-                alu_src   = 2'b00; // Not used for ALU calculation
-
-                alu_op    = 4'b0000; // Not used rd ← pc+4, pc ← pc+imm j
-                mem_read  = 1'b0;   //not used
-                mem_write = 1'b0;   //not used
-                mem_to_reg = 2'b10; // Use PC+4 for register write-back to be changed
-                jump      = 1'b1;
+                reg_write = 1'b1;    // Write to register
+                alu_src   = 2'b11;   // Use PC and imm_ext
+                alu_op    = 4'b0000; // ADD for target address calculation
+                mem_read  = 1'b0;    // No memory access
+                mem_write = 1'b0;    // No memory access
+                mem_to_reg = 2'b10;  // Select PC+4
+                jump      = 1'b1;    // Enable jump
             end
 
             7'b1100111: begin // I-type instruction: JALR
-                reg_write = 1'b1;
-                alu_src   = 2'b01; // Use immediate to be changed
-
-                alu_op    = 4'b0000; // ADD operation rd ← pc+4, pc ← (rs1+imm i) & ∼1
-                mem_read  = 1'b0;   //not used
-                mem_write = 1'b0;   //not used
-                mem_to_reg = 2'b10; // Use PC+4 for register write-back to be changed
-                jump      = 1'b1;
+                reg_write = 1'b1;    // Write to register
+                alu_src   = 2'b10;   // Use rs1_data and imm_ext
+                alu_op    = 4'b0000; // ADD for target address calculation
+                mem_read  = 1'b0;    // No memory access
+                mem_write = 1'b0;    // No memory access
+                mem_to_reg = 2'b10;  // Select PC+4
+                jump      = 1'b1;    // Enable jump
             end
 
             default: begin
@@ -146,8 +143,6 @@ module instruction_decoder(
                 branch    = 1'b0;
                 jump      = 1'b0;
             end
-
-            
         endcase
     end
 endmodule
