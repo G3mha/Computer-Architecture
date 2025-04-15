@@ -54,8 +54,8 @@ class CPUTest:
                     break
                 line = line.strip()
                 if line and not line.startswith('//'):
-                    expected_values[i] = int(line, 16)
-        
+                    expected_values[i] = int(line.split('//')[0].strip(), 16)
+
         return expected_values
 
 @cocotb.test()

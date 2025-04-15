@@ -11,7 +11,7 @@ VERILOG_INCLUDE_DIRS = $(shell pwd)/../src
 # Design settings
 VERILOG_SOURCES = $(shell find ../src -name "*.sv" -type f)
 TOPLEVEL = top
-MODULE = test_cpu
+COCOTB_TEST_MODULES = test_cpu
 
 # Include cocotb's makefile directly with path
 include $(shell cocotb-config --makefiles)/Makefile.sim
