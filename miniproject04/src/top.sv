@@ -1,15 +1,4 @@
 // Top-level module for RV32I Single-Cycle Processor
-`include "cpu/program_counter.sv"
-`include "cpu/pc_adder.sv"
-`include "cpu/alu.sv"
-`include "cpu/imm_gen.sv"
-`include "cpu/instruction_decoder.sv"
-`include "memory/instruction_memory.sv"
-`include "cpu/instruction_register.sv"
-`include "memory/memory.sv"
-`include "cpu/mux_2x1.sv"
-`include "cpu/mux_4x1.sv"
-`include "cpu/register_file.sv"
 
 module top #(
   parameter INIT_FILE = "program.mem"
@@ -64,7 +53,9 @@ pc_adder pc_incr (
 );
 
 // === Instruction Memory ===
-instruction_memory instruction_mem (
+instruction_memory #(
+  .INIT_FILE(INIT_FILE)
+) instruction_mem (
   .address(pc),
   .instruction(instruction_mem_data)
 );
