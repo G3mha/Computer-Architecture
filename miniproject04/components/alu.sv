@@ -19,7 +19,7 @@ module alu(
     localparam ALU_SLTU = 4'b1001;  // Set less than (unsigned)
 
     // Result MUX
-    always_comb begin
+    always @(*) begin
         case (alu_op)
             ALU_ADD:  result = a + b;
             ALU_SUB:  result = a - b;

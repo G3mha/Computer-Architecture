@@ -1,15 +1,15 @@
 // Top-level module for RV32I Single-Cycle Processor
-`include "miniproject04/components/program_counter.sv"
-`include "miniproject04/components/pc_adder.sv"
-`include "miniproject04/components/alu.sv"
-`include "miniproject04/components/imm_gen.sv"
-`include "miniproject04/components/instruction_decoder.sv"
-`include "miniproject04/components/instruction_memory.sv"
-`include "miniproject04/components/instruction_register.sv"
-`include "miniproject04/components/memory.sv"
-`include "miniproject04/components/mux_2x1.sv"
-`include "miniproject04/components/mux_4x1.sv"
-`include "miniproject04/components/register_file.sv"
+`include "components/program_counter.sv"
+`include "components/pc_adder.sv"
+`include "components/alu.sv"
+`include "components/imm_gen.sv"
+`include "components/instruction_decoder.sv"
+`include "components/instruction_memory.sv"
+`include "components/instruction_register.sv"
+`include "components/memory.sv"
+`include "components/mux_2x1.sv"
+`include "components/mux_4x1.sv"
+`include "components/register_file.sv"
 
 module top (
   input  logic clk,

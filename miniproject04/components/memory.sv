@@ -121,7 +121,7 @@ module memory #(
     assign sign_bit2 = read_value[23];
     assign sign_bit3 = read_value[31];
 
-    always_comb begin
+    always @(*) begin
         if (read_word) begin
             read_data = read_value;
         end
