@@ -1,0 +1,32 @@
+# Build outputs
+build/
+*.bin
+*.asc
+*.json
+
+# Simulation outputs
+sim/
+*.vcd
+*.fst
+*.vvp
+*.vpi
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+results.xml
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS-specific
+.DS_Store
+Thumbs.db
