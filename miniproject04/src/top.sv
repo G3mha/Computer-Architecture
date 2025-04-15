@@ -1,10 +1,25 @@
 // Top-level module for RV32I Single-Cycle Processor
+`include "cpu/program_counter.sv"
+`include "cpu/pc_adder.sv"
+`include "cpu/alu.sv"
+`include "cpu/imm_gen.sv"
+`include "cpu/instruction_decoder.sv"
+`include "memory/instruction_memory.sv"
+`include "cpu/instruction_register.sv"
+`include "memory/memory.sv"
+`include "cpu/mux_2x1.sv"
+`include "cpu/mux_4x1.sv"
+`include "cpu/register_file.sv"
 
 module top #(
   parameter INIT_FILE = "program.mem"
 ) (
   input  logic clk,
-  input  logic reset
+  input  logic reset,
+  output logic led,
+  output logic red,
+  output logic green,
+  output logic blue
 );
 
 // === Program Counter and Control Signals ===
@@ -133,10 +148,10 @@ memory #(
   .write_data(rs2_data),
   .read_address(alu_result),
   .read_data(mem_read_data),
-  .led(),
-  .red(),
-  .green(),
-  .blue()
+  .led(led),
+  .red(red),
+  .green(green),
+  .blue(blue)
 );
 
 assign take_branch = branch && zero_flag;
