@@ -4,7 +4,7 @@ module ImmGen (
     output logic [31:0] ImmExt
 );
 
-    always_comb begin
+    always @(*) begin
         case (Opcode)
             7'b0000011, // I-type (e.g., LW)
             7'b0010011, // I-type (e.g., ADDI)

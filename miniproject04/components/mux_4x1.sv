@@ -9,7 +9,7 @@ module mux_4x1 #(
     output logic [WIDTH-1:0] out     // Output
 );
 
-    always_comb begin
+    always @(*) begin
         case (sel)
             2'b00: out = in0;
             2'b01: out = in1;

@@ -19,7 +19,7 @@ module instruction_decoder(
     assign funct7 = instruction[31:25];
     
     // Instruction decoder logic
-    always_comb begin
+    always @(*) begin
         // Default control signals
         alu_op    = 4'b0000;  // ADD operation
         reg_write = 1'b0;
