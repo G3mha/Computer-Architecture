@@ -17,6 +17,12 @@ class CPUTest:
         clock = Clock(self.dut.clk, 10, units="ns")
         cocotb.start_soon(clock.start())
         
+        # Copy the input file to the default location
+        import shutil
+        print(f"Copying {self.input_file} to program.mem")
+        target_file = "program.mem"  # Match default INIT_FILE
+        shutil.copy(self.input_file, target_file)
+
         # Reset the processor
         self.dut.reset.value = 1
         await RisingEdge(self.dut.clk)
@@ -34,12 +40,19 @@ class CPUTest:
         for _ in range(30):
             await RisingEdge(self.dut.clk)
             
-        # Check results by examining register file
+        # Check results by examining register file using read ports
         expected_values = self.load_expected_values()
         for i, expected in enumerate(expected_values):
             if expected is not None:
-                actual = self.dut.top.registers.registers[i].value
-                assert actual == expected, f"Register x{i} expected {expected:08x}, got {actual:08x}"
+                # Set the read address to access register i
+                self.dut.top.registers.rs1_addr.value = i
+                # Wait for the clock edge to update the read data
+                await RisingEdge(self.dut.clk)
+                # Read the value from rs1_data
+                actual = self.dut.top.rs1_data.value
+                # Convert to integer for comparison
+                actual_int = int(actual)
+                assert actual_int == expected, f"Register x{i} expected {expected:08x}, got {actual_int:08x}"
     
     def load_expected_values(self):
         """Load expected register values from file."""

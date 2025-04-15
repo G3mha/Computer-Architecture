@@ -11,7 +11,9 @@ module instruction_memory #(
 
   // Load memory contents from file
   initial begin
-    $readmemh("program.mem", memory);
+    if (INIT_FILE != "") begin
+      $readmemh(INIT_FILE, memory);
+    end
   end
 
   // Word-aligned access (divide address by 4)
