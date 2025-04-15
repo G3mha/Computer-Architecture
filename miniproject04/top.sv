@@ -1,17 +1,9 @@
 // Top-level module for RV32I Single-Cycle Processor
-`include "components/program_counter.sv"
-`include "components/pc_adder.sv"
-`include "components/alu.sv"
-`include "components/imm_gen.sv"
-`include "components/instruction_decoder.sv"
-`include "components/instruction_memory.sv"
-`include "components/instruction_register.sv"
-`include "components/memory.sv"
-`include "components/mux_2x1.sv"
-`include "components/mux_4x1.sv"
-`include "components/register_file.sv"
+// All modules are compiled separately, no includes needed
 
-module top (
+module top #(
+  parameter INIT_FILE = "program.mem"
+) (
   input  logic clk,
   input  logic reset
 );
@@ -133,7 +125,7 @@ alu alu_unit (
 
 // === Memory Unit ===
 memory #(
-  .INIT_FILE("program.mem")
+  .INIT_FILE(INIT_FILE)
 ) mem_unit (
   .clk(clk),
   .write_mem(mem_write),

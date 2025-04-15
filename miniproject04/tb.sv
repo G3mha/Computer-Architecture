@@ -92,8 +92,7 @@ module tb_top;
     
     // Test each instruction type
     test_instruction_type("R-Type", "test_r_type.mem");
-    // Uncomment to run more tests
-    //test_instruction_type("I-Type", "test_i_type.mem");
+    test_instruction_type("I-Type", "test_i_type.mem");
     //test_instruction_type("Load", "test_load.mem");
     //test_instruction_type("Store", "test_store.mem");
     //test_instruction_type("Branch", "test_branch.mem");
