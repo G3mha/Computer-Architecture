@@ -1,5 +1,4 @@
 // Top-level module for RV32I Single-Cycle Processor
-// All modules are compiled separately, no includes needed
 
 module top #(
   parameter INIT_FILE = "program.mem"
