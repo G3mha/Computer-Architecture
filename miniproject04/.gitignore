@@ -33,3 +33,9 @@ Thumbs.db
 
 # Python virtual environments
 .venv/*
+
+# Simulation cache
+*/sim_build/
+
+# Project filepath tree
+tree.txt
