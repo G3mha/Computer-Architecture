@@ -1,0 +1,5 @@
+00000013 // addi x0, x0, 0        (NOP)
+12345137 // lui  x2, 0x12345      (x2 = 0x12345000)
+00100193 // addi x3, x0, 1        (x3 = 1)
+ABCDE217 // auipc x4, 0xABCDE     (x4 = PC + 0xABCDE000)
+0000006F // jal x0, 0             (Loop)
