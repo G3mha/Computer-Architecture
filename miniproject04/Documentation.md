@@ -115,7 +115,7 @@ Below is an **overview** of each SystemVerilog file in this project. Include det
 - **U-Type**  
 - **J-Type**  
 
-![alt text](image.png)
+![RV32I Instruction Table](img/instruction_table.png)
 
 
 ### instruction_register.sv
