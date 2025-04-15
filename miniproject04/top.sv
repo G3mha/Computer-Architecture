@@ -79,7 +79,7 @@ ImmGen immgen (
 logic [31:0] rs1_data, rs2_data;
 logic [31:0] rdv_mux_out;
 
-reg_file registers (
+register_file registers (
   .clk(clk),
   .reset(reset),
   .reg_write(reg_write),
