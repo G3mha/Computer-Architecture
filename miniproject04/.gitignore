@@ -30,3 +30,6 @@ results.xml
 # OS-specific
 .DS_Store
 Thumbs.db
+
+# Python virtual environments
+.venv/*
