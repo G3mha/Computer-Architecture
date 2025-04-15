@@ -11,6 +11,10 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [How to Use](#how-to-use)
+  - [Simulation](#simulation)
+  - [Synthesis](#synthesis)
+  - [Testing](#testing)
 - [Design Specifications](#design-specifications)
 - [SystemVerilog Modules](#systemverilog-modules)
   - [top.sv](#topsv)
@@ -38,12 +42,57 @@ Design a 32-bit RISC-V integer microprocessor with a von Neumann architecture th
 
 The instructions for this project are available [here](docs/instructions.md).
 
+## How to Use
+
+### Simulation
+
+1. **Install Icarus Verilog**: Ensure you have Icarus Verilog installed on your system. You can download it from [Icarus Verilog](http://iverilog.icarus.com/).
+
+2. **Run the Simulation**
+
+   - Navigate to the project directory:  
+
+   ```bash
+   cd /Users/enriccogemha/Developer/Computer-Architecture/miniproject04
+   ```
+
+   - Compile the SystemVerilog files using Icarus Verilog:  
+
+   ```bash
+   iverilog -o processor_sim top.sv pc.sv pc_adder.sv alu.sv imm_gen.sv instruction_decoder.sv instruction_register.sv memory.sv mux_2x1.sv mux_4x1.sv
+   ```
+
+   - Run the simulation:  
+
+   ```bash
+   vvp processor_sim
+   ```
+
+   - View the waveform (optional):  
+
+   If you have a `.vcd` file generated, open it with a waveform viewer like GTKWave:  
+
+   ```bash
+   gtkwave dump.vcd
+   ```
+
+3. **Verify Outputs**  
+
+   - Check the console output for any errors or mismatches in expected results.
+   - Use the waveform viewer to confirm the correctness of the control signals, data paths, and instruction execution.
+
+4. **Debugging**  
+
+   - If issues arise, add `$display` statements in your modules to print intermediate values.
+   - Re-run the simulation and analyze the output to identify and fix errors.
+
 ## Design Specifications
+
 - **Instruction Set:** All Base RV32I instructions Type-R, I, S, B, U and J (excluding `ecall`, `ebreak`, `csrrw`, `csrrs`, `csrrc`, `csrrwi`, `csrrsi`, `csrrci`)
 - **Execution Model:** Unpipelined, multicycle
 - **Memory Architecture:** Single memory for instructions and data (von Neumann)
 - **Memory Size:** 8kB of physical memory at the lower end of the address space
-- **Peripherals:** 
+- **Peripherals:**
   - 8-bit PWM generators for user LED and RGB LEDs (iceBlinkPico)
   - Two running 32-bit timers (millisecond and microsecond counters)
 
