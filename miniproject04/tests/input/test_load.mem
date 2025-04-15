@@ -1,0 +1,7 @@
+00000013 // addi x0, x0, 0     (NOP)
+00500223 // sb   x5, 4(x0)     (Store 5 at addr 4)
+00600423 // sb   x6, 8(x0)     (Store 6 at addr 8)
+00700623 // sb   x7, 12(x0)    (Store 7 at addr 12)
+00804203 // lbu  x4, 8(x0)     (Load byte unsigned from addr 8)
+00c05283 // lhu  x5, 12(x0)    (Load halfword unsigned from addr 12)
+0000006F // jal x0, 0          (Loop)
