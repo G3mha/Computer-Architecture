@@ -43,7 +43,7 @@ $(BUILD_DIR)/$(FPGA_TOP).json:
 	$(YOSYS) -p "read_verilog -sv $(SRC_DIR)/top.sv; synth_ice40 -top top -json $@"
 
 $(BUILD_DIR)/$(FPGA_TOP).asc: $(BUILD_DIR)/$(FPGA_TOP).json
-	$(NEXTPNR) --up5k --package sg48 --json $< --pcf $(PCF_FILE) --asc $@
+	$(NEXTPNR) --up5k --package sg48 --json $< --pcf $(PCF_FILE) --pcf-allow-unconstrained --asc $@
 
 $(BUILD_DIR)/$(FPGA_TOP).bin: $(BUILD_DIR)/$(FPGA_TOP).asc
 	$(ICEPACK) $< $@
