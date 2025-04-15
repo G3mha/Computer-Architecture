@@ -23,7 +23,6 @@
   - [memory.sv](#memorysv)
   - [mux_2x1.sv](#mux_2x1sv)
   - [mux_4x1.sv](#mux_4x1sv)
-  - [instructions.md](#instructionsmd)
 - [Processor Architecture](#processor-architecture)
 - [Memory and Peripheral Integration](#memory-and-peripheral-integration)
 - [Instruction Set Implementation](#instruction-set-implementation)
@@ -34,8 +33,10 @@
 - [Appendix](#appendix)
 
 ## Overview
+
 Design a 32-bit RISC-V integer microprocessor with a von Neumann architecture that executes one instruction at a time using an 8kB single memory for both code and data. The processor will integrate memory-mapped peripherals—including LED PWM controllers and timers—to run a RISC-V assembly program that blinks the LEDs.
 
+The instructions for this project are available [here](docs/instructions.md).
 
 ## Design Specifications
 - **Instruction Set:** All Base RV32I instructions Type-R, I, S, B, U and J (excluding `ecall`, `ebreak`, `csrrw`, `csrrs`, `csrrc`, `csrrwi`, `csrrsi`, `csrrci`)
@@ -117,7 +118,7 @@ Below is an **overview** of each SystemVerilog file in this project. Include det
 - **U-Type**  
 - **J-Type**  
 
-![RV32I Instruction Table](img/instruction_table.png)
+![RV32I Instruction Table](docs/img/instruction_table.png)
 
 
 ### instruction_register.sv
