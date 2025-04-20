@@ -9,8 +9,8 @@ module tb_riscv_processor;
   logic red, green, blue;
   
   // Path constants for test files
-  string INPUT_PATH = "../program/input/";
-  string EXPECTED_PATH = "../program/expected/";
+  string INPUT_PATH = "./program/input/";
+  string EXPECTED_PATH = "./program/expected/";
   
   // Test configuration
   int MAX_CYCLES = 50;
@@ -20,7 +20,7 @@ module tb_riscv_processor;
   
   // Instantiate the top module
   top #(
-    .INIT_FILE("../program/program.mem") // Will be overridden by test
+    .INIT_FILE("./program/program.mem") // Will be overridden by test
   ) dut (
     .clk(clk),
     .reset(reset),
