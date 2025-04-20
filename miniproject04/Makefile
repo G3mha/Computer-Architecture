@@ -66,8 +66,9 @@ $(SIM_DIR)/cpu_tb.vvp: $(TB_DIR)/tb_riscv_processor.sv $(SV_FILES)
 	$(IVERILOG) -g2012 -o $@ $(TB_DIR)/tb_riscv_processor.sv $(SV_FILES)
 
 .PHONY: sim_alu
-sim_alu: $(SIM_DIR)/alu_tb.vvp
-	$(VVP) $<
+sim_alu: tb/alu_tb.sv src/cpu/alu.sv
+	iverilog -g2012 -o sim/alu_tb.vvp $^
+	vvp sim/alu_tb.vvp
 
 $(SIM_DIR)/alu_tb.vvp: $(TB_DIR)/tb_alu.sv $(SRC_DIR)/cpu/alu.sv
 	@mkdir -p $(SIM_DIR)

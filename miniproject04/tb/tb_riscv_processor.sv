@@ -13,11 +13,10 @@ module tb_riscv_processor;
   string EXPECTED_PATH;
 
   initial begin
-    INPUT_PATH = "./program/input/";
-    EXPECTED_PATH = "./program/expected/";
+    INPUT_PATH = "program/input/";
+    EXPECTED_PATH = "program/expected/";
   end
 
-  
   // Test configuration
   int MAX_CYCLES = 50;
   logic [31:0] expected_reg_values[0:31];
@@ -170,6 +169,7 @@ module tb_riscv_processor;
     file = $fopen(filename, "r");
     if (file == 0) begin
       $display("ERROR: Failed to open file: %s", filename);
+      $finish; // Stop simulation immediately
       return;
     end
     
@@ -200,6 +200,7 @@ module tb_riscv_processor;
     if (src == 0) begin
       $display("ERROR: Failed to open source file: %s", src_file);
       $display("Current directory: %s", `__FILE__);
+      $finish; // Stop simulation immediately
       return;
     end
     
@@ -207,6 +208,7 @@ module tb_riscv_processor;
     if (dst == 0) begin
       $display("ERROR: Failed to open destination file: %s", dst_file);
       $fclose(src);
+      $finish; // Stop simulation immediately
       return;
     end
     
