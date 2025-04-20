@@ -9,8 +9,14 @@ module tb_riscv_processor;
   logic red, green, blue;
   
   // Path constants for test files
-  string INPUT_PATH = "./program/input/";
-  string EXPECTED_PATH = "./program/expected/";
+  string INPUT_PATH;
+  string EXPECTED_PATH;
+
+  initial begin
+    INPUT_PATH = "./program/input/";
+    EXPECTED_PATH = "./program/expected/";
+  end
+
   
   // Test configuration
   int MAX_CYCLES = 50;
@@ -72,8 +78,12 @@ module tb_riscv_processor;
     $display("\n===== Testing %s =====", test_name);
     
     // Setup file paths
-    input_file = {INPUT_PATH, mem_file};
-    expected_file = {EXPECTED_PATH, mem_file};
+    input_file = $sformatf("%s%s", INPUT_PATH, mem_file);
+    expected_file = $sformatf("%s%s", EXPECTED_PATH, mem_file);
+
+    $display("Input file path: %s", input_file);
+    $display("Expected file path: %s", expected_file);
+
     
     // Reset processor
     reset = 1;
@@ -193,6 +203,7 @@ module tb_riscv_processor;
     src = $fopen(src_file, "r");
     if (src == 0) begin
       $display("ERROR: Failed to open source file: %s", src_file);
+      $display("Current directory: %s", `__FILE__);
       return;
     end
     
