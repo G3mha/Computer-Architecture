@@ -6,8 +6,8 @@ module instruction_memory #(
   output logic [31:0] instruction
 );
 
-  // Memory array
-  logic [31:0] memory [0:255];
+  // Memory array - increase to 2048 words to match the main memory
+  logic [31:0] memory [0:2047];
 
   // Load memory contents from file
   initial begin

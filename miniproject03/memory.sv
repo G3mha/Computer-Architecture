@@ -7,7 +7,7 @@ module memory #(
 );
     logic [9:0] sample_memory [0:127]; // Array 128 10-bit
 
-    initial if (INIT_FILE) begin
+    if (INIT_FILE != "") begin
         $readmemh(INIT_FILE, sample_memory);
     end
 
