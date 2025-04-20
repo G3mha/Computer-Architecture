@@ -7,7 +7,6 @@ all: build test
 # Variables
 SRC_DIR     := src
 TB_DIR      := tb
-TESTS_DIR   := tests
 SIM_DIR     := sim
 BUILD_DIR   := build
 PROGRAM_DIR := program
@@ -56,32 +55,35 @@ prog: $(BUILD_DIR)/$(FPGA_TOP).bin
 	$(DFU_UTIL) --device 1d50:6146 --alt 0 -D $< -R
 
 # -----------------------------------------------
-# Traditional simulation with iverilog
+# SystemVerilog Testbenches
 # -----------------------------------------------
-.PHONY: sim
-sim: $(SIM_DIR)/tb.vcd
+.PHONY: sim_cpu
+sim_cpu: $(SIM_DIR)/cpu_tb.vvp
+	$(VVP) $<
 
-$(SIM_DIR)/tb.vcd: $(SIM_DIR)/tb.vvp
-	$(VVP) $< -fst
-
-$(SIM_DIR)/tb.vvp: $(SRC_DIR)/top.sv $(TB_DIR)/tb.sv
+$(SIM_DIR)/cpu_tb.vvp: $(TB_DIR)/tb_riscv_processor.sv $(SV_FILES)
 	@mkdir -p $(SIM_DIR)
-	$(IVERILOG) -g2012 -o $@ $(TB_DIR)/tb.sv
+	$(IVERILOG) -g2012 -o $@ $(TB_DIR)/tb_riscv_processor.sv $(SV_FILES)
 
-.PHONY: wave
-wave: $(SIM_DIR)/tb.vcd
+.PHONY: sim_alu
+sim_alu: $(SIM_DIR)/alu_tb.vvp
+	$(VVP) $<
+
+$(SIM_DIR)/alu_tb.vvp: $(TB_DIR)/tb_alu.sv $(SRC_DIR)/cpu/alu.sv
+	@mkdir -p $(SIM_DIR)
+	$(IVERILOG) -g2012 -I$(SRC_DIR) -o $@ $(TB_DIR)/tb_alu.sv $(SRC_DIR)/cpu/alu.sv
+
+.PHONY: wave_cpu
+wave_cpu: $(SIM_DIR)/cpu_tb.vcd
 	$(GTKWAVE) $< &
 
-# -----------------------------------------------
-# cocotb testing
-# -----------------------------------------------
-.PHONY: cocotb
-cocotb:
-	$(MAKE) -C $(TESTS_DIR) SIM=icarus
+.PHONY: wave_alu
+wave_alu: $(SIM_DIR)/alu_tb.vcd
+	$(GTKWAVE) $< &
 
 # Run all tests
 .PHONY: test
-test: sim cocotb
+test: sim_cpu sim_alu
 
 # -----------------------------------------------
 # Clean up
@@ -89,7 +91,6 @@ test: sim cocotb
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR)/* $(SIM_DIR)/*
-	$(MAKE) -C $(TESTS_DIR) clean SIM=icarus
 
 .PHONY: clean_all
 clean_all: clean
