@@ -108,12 +108,14 @@ module alu_tb;
     
     task test_sra(input logic [31:0] op1, input logic [31:0] op2);
         begin
+            logic [31:0] expected;  // Moved declaration to beginning of block
             a = op1;
             b = op2;
             alu_op = ALU_SRA;
             #10;
+            expected = $signed(op1) >>> op2[4:0];  // Separate assignment
             $display("SRA: 0x%h >>> %d = 0x%h", op1, op2[4:0], result);
-            assert(result == ($signed(op1) >>> op2[4:0])) else $error("SRA failed");
+            assert(result == expected) else $error("SRA failed: expected 0x%h, got 0x%h", expected, result);
         end
     endtask
     
