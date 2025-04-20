@@ -74,6 +74,16 @@ $(SIM_DIR)/alu_tb.vvp: $(TB_DIR)/tb_alu.sv $(SRC_DIR)/cpu/alu.sv
 	@mkdir -p $(SIM_DIR)
 	$(IVERILOG) -g2012 -I$(SRC_DIR) -o $@ $(TB_DIR)/tb_alu.sv $(SRC_DIR)/cpu/alu.sv
 
+.PHONY: sim_imm_gen
+sim_imm_gen: tb/imm_gen_tb.sv src/cpu/imm_gen.sv
+	@mkdir -p $(SIM_DIR)
+	$(IVERILOG) -g2012 -o $(SIM_DIR)/imm_gen_tb.vvp $^
+	$(VVP) $(SIM_DIR)/imm_gen_tb.vvp
+
+$(SIM_DIR)/imm_gen_tb.vvp: $(TB_DIR)/imm_gen_tb.sv $(SRC_DIR)/cpu/imm_gen.sv
+	@mkdir -p $(SIM_DIR)
+	$(IVERILOG) -g2012 -I$(SRC_DIR) -o $@ $(TB_DIR)/imm_gen_tb.sv $(SRC_DIR)/cpu/imm_gen.sv
+
 .PHONY: wave_cpu
 wave_cpu: $(SIM_DIR)/cpu_tb.vcd
 	$(GTKWAVE) $< &
@@ -82,9 +92,13 @@ wave_cpu: $(SIM_DIR)/cpu_tb.vcd
 wave_alu: $(SIM_DIR)/alu_tb.vcd
 	$(GTKWAVE) $< &
 
+.PHONY: wave_imm_gen
+wave_imm_gen: $(SIM_DIR)/imm_gen_tb.vcd
+	$(GTKWAVE) $< &
+
 # Run all tests
 .PHONY: test
-test: sim_cpu sim_alu
+test: sim_cpu sim_alu sim_imm_gen
 
 # -----------------------------------------------
 # Clean up
