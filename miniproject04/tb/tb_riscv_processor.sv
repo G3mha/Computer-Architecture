@@ -94,11 +94,7 @@ module tb_riscv_processor;
     // Load program and expected values
     $display("Loading test program: %s", input_file);
     
-    // Copy to program.mem for the DUT to read (in both the current directory and sim directory)
     copy_file(input_file, "program.mem");
-    
-    // Also copy to the root directory where the memory modules expect to find it
-    copy_file(input_file, "../program.mem");
     
     // Instead of trying to force clear memory, we'll use the reset signal
     // to let the system reload memory from the file

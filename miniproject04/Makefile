@@ -59,7 +59,7 @@ prog: $(BUILD_DIR)/$(FPGA_TOP).bin
 # -----------------------------------------------
 .PHONY: sim_cpu
 sim_cpu: $(SIM_DIR)/cpu_tb.vvp
-	cd $(SIM_DIR) && $(VVP) cpu_tb.vvp
+	$(VVP) $(SIM_DIR)/cpu_tb.vvp
 
 $(SIM_DIR)/cpu_tb.vvp: $(TB_DIR)/tb_riscv_processor.sv $(SV_FILES)
 	@mkdir -p $(SIM_DIR)
