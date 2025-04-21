@@ -94,6 +94,12 @@ $(SIM_DIR)/register_file_tb.vvp: $(TB_DIR)/register_file_tb.sv $(SRC_DIR)/cpu/re
 	@mkdir -p $(SIM_DIR)
 	$(IVERILOG) -g2012 -I$(SRC_DIR) -o $@ $(TB_DIR)/register_file_tb.sv $(SRC_DIR)/cpu/register_file.sv
 
+.PHONY: sim_instruction_decoder
+sim_instruction_decoder: tb/instruction_decoder_tb.sv src/cpu/instruction_decoder.sv
+	@mkdir -p $(SIM_DIR)
+	$(IVERILOG) -g2012 -o $(SIM_DIR)/instruction_decoder_tb.vvp $^
+	$(VVP) $(SIM_DIR)/instruction_decoder_tb.vvp
+
 .PHONY: wave_cpu
 wave_cpu: $(SIM_DIR)/cpu_tb.vcd
 	$(GTKWAVE) $< &
@@ -112,7 +118,8 @@ wave_register_file: $(SIM_DIR)/register_file_tb.vcd
 
 # Run all tests
 .PHONY: test
-test: sim_cpu sim_alu sim_imm_gen sim_register_file
+test: sim_cpu sim_alu sim_imm_gen sim_register_file sim_instruction_decoder
+	@echo "All tests passed!"
 
 # -----------------------------------------------
 # Clean up
