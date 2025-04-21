@@ -52,7 +52,7 @@ module j_type_tb;
 
     // Test sequence
     initial begin
-        $display("Starting J-Type Instructions Test");
+        $display("Starting J-Type Instructions Test (JAL only)");
         
         // Initialize signals
         clk = 0;
@@ -66,10 +66,10 @@ module j_type_tb;
         repeat(100) @(posedge clk);
         
         // Check results
-        $display("Checking register values after J-type instructions execution");
+        $display("Checking register values after J-type (JAL) instructions execution");
         
         for (int i = 0; i <= 8; i++) begin
-            if ((i == 1 || i == 6) && (reg_values[i] !== expected_reg[i])) begin
+            if ((i == 1 || i == 4) && (reg_values[i] !== expected_reg[i])) begin
                 // Link registers (x1/x6) store return addresses, so they might vary
                 if (reg_values[i] == 0) begin
                     $display("ERROR: Link register x%0d = 0, Expected non-zero value", i);
@@ -85,7 +85,7 @@ module j_type_tb;
         end
         
         // End simulation
-        $display("J-type instruction test completed");
+        $display("J-type (JAL) instruction test completed");
         $finish;
     end
     

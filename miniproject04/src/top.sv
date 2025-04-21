@@ -158,7 +158,6 @@ wire bgeu_cond = (branch_funct3 == 3'b111) && !alu_result[0]; // bgeu
 // Take branch if any condition is true and branch signal is enabled
 assign take_branch = branch && (beq_cond || bne_cond || blt_cond || bge_cond || bltu_cond || bgeu_cond);
 
-
 // === PC MUX ===
 mux_2x1 pc_mux (
   .in0(pc_plus_4),
