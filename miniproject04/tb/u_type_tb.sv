@@ -89,7 +89,7 @@ module u_type_tb;
     
     // Optional: Dump waveforms
     initial begin
-        $dumpfile("u_type_tb.vcd");
+        $dumpfile("sim/u_type_tb.vcd");
         $dumpvars(0, u_type_tb);
     end
 endmodule

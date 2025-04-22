@@ -119,7 +119,7 @@ module b_type_tb;
     
     // Dump waveforms
     initial begin
-        $dumpfile("b_type_tb.vcd");
+        $dumpfile("sim/b_type_tb.vcd");
         $dumpvars(0, b_type_tb);
     end
 endmodule

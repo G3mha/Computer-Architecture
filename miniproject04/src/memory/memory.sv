@@ -62,12 +62,14 @@ module memory #(
 
     // Initialize memory array
     initial begin
+        // First initialize all memory to zero
+        for (int i = 0; i < 2048; i++) begin
+            mem[i] = 32'd0;
+        end
+        
+        // Then read from file if specified
         if (INIT_FILE != "") begin
             $readmemh(INIT_FILE, mem);
-        end else begin
-            for (int i = 0; i < 2048; i++) begin
-                mem[i] = 32'd0;
-            end
         end
     end
 

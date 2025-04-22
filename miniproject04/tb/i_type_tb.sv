@@ -74,7 +74,7 @@ module i_type_tb;
     
     // Optional: Dump waveforms
     initial begin
-        $dumpfile("i_type_tb.vcd");
+        $dumpfile("sim/i_type_tb.vcd");
         $dumpvars(0, i_type_tb);
     end
 endmodule
