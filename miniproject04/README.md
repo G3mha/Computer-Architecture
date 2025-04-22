@@ -44,30 +44,57 @@ The instructions for this project are available [here](docs/instructions.md).
 
 ## How to Use
 
+### Setup
+
+This project includes OS-specific makefiles:
+
+- For Windows: `Makefile.windows`
+- For macOS: `Makefile.macos`
+
+Choose the appropriate makefile for your system:
+
+```bash
+# Windows
+make -f Makefile.windows [command]
+
+# macOS
+make -f Makefile.macos [command]
+```
+
+Alternatively, you can create a symlink to the appropriate makefile:
+
+```bash
+# Windows
+copy Makefile.windows Makefile
+
+# macOS
+ln -s Makefile.macos Makefile
+```
+
 ### Simulation
 
 To verify the processor functionality through simulation:
 
 ```bash
 # Run all simulations
-make test
+make -f Makefile.[your_os] test
 
 # Component-level simulations
-make sim_alu          # Test ALU operations
-make sim_imm_gen      # Test immediate generation
-make sim_register_file    # Test register file
-make sim_instruction_decoder  # Test instruction decoder
+make -f Makefile.[your_os] sim_alu          # Test ALU operations
+make -f Makefile.[your_os] sim_imm_gen      # Test immediate generation
+make -f Makefile.[your_os] sim_register_file    # Test register file
+make -f Makefile.[your_os] sim_instruction_decoder  # Test instruction decoder
 
 # Instruction type simulations
-make sim_r_type       # Test R-type instructions
-make sim_i_type       # Test I-type instructions
-make sim_s_type       # Test S-type instructions
-make sim_b_type       # Test B-type instructions
-make sim_u_type       # Test U-type instructions
-make sim_j_type       # Test J-type instructions
+make -f Makefile.[your_os] sim_r_type       # Test R-type instructions
+make -f Makefile.[your_os] sim_i_type       # Test I-type instructions
+make -f Makefile.[your_os] sim_s_type       # Test S-type instructions
+make -f Makefile.[your_os] sim_b_type       # Test B-type instructions
+make -f Makefile.[your_os] sim_u_type       # Test U-type instructions
+make -f Makefile.[your_os] sim_j_type       # Test J-type instructions
 
 # View waveforms (after running simulation)
-make wave_r_type      # Open GTKWave with R-type simulation results
+make -f Makefile.[your_os] wave_r_type      # Open GTKWave with R-type simulation results
 ```
 
 The test results are displayed in the console, showing which register values match expected outputs from the reference files in `program/expected/`.
@@ -78,7 +105,7 @@ To build the processor for FPGA implementation:
 
 ```bash
 # Synthesize the design
-make build
+make -f Makefile.[your_os] build
 
 # The build process:
 # 1. Synthesizes using Yosys (generates .json)
@@ -99,13 +126,13 @@ Each test program is located in `program/input/`, with corresponding expected ou
 
 ```bash
 # Run all tests
-make test
+make -f Makefile.[your_os] test
 
 # Program the FPGA
-make prog
+make -f Makefile.[your_os] prog
 
 # Clean build and simulation artifacts
-make clean
+make -f Makefile.[your_os] clean
 ```
 
 For writing custom test programs, use the RISC-V assembler tools:
