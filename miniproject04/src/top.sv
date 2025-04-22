@@ -8,17 +8,18 @@ module top #(
   output logic led,
   output logic red,
   output logic green,
-  output logic blue
+  output logic blue,
+  output logic [31:0] ImmExt
 );
 
 // === Program Counter and Control Signals ===
 logic [31:0] pc;
 logic [31:0] pc_next;
 logic [31:0] pc_plus_4;
+logic [31:0] branch_target;  // Branch target address
 logic pc_write = 1'b1;  // Always enabled for single-cycle
 
 // === Instruction Memory and Decoding ===
-logic [31:0] instruction_mem_data;
 logic [31:0] instruction;
 logic ir_write = 1'b1;  // Always enabled for single-cycle
 
@@ -36,6 +37,7 @@ logic take_branch;
 logic [31:0] imm_ext;
 logic [31:0] mem_read_data;
 logic [31:0] write_data;
+logic pc_mux_sel;
 
 // === Program Counter ===
 program_counter pc_unit (
@@ -52,26 +54,11 @@ pc_adder pc_incr (
   .pc_plus_4(pc_plus_4)
 );
 
-// === Instruction Memory ===
-instruction_memory #(
-  .INIT_FILE(INIT_FILE)
-) instruction_mem (
-  .address(pc),
-  .instruction(instruction_mem_data)
-);
-
-// === Instruction Register ===
-instruction_register ir (
-  .clk(clk),
-  .reset(reset),
-  .ir_write(ir_write),
-  .instruction_in(instruction_mem_data),
-  .instruction_out(instruction)
-);
-
 // === Instruction Decoder ===
 instruction_decoder decoder (
   .instruction(instruction),
+  .pc(pc),                // Connect PC
+  .imm_ext(imm_ext),      // Connect ImmExt
   .alu_op(alu_op),
   .reg_write(reg_write),
   .alu_src(alu_src),
@@ -133,12 +120,13 @@ memory #(
   .INIT_FILE(INIT_FILE)
 ) mem_unit (
   .clk(clk),
-  .write_mem(mem_write),
-  .funct3(instruction[14:12]),
-  .write_address(alu_result),
-  .write_data(rs2_data),
-  .read_address(alu_result),
-  .read_data(mem_read_data),
+  .mem_read(mem_read),         // Read enable for data
+  .mem_write(mem_write),       // Write enable for data
+  .address(pc),                // Address for instruction fetch or data access
+  .funct3(instruction[14:12]), // Function code for data access
+  .write_data(rs2_data),       // Data to write
+  .read_data(mem_read_data),   // Data read
+  .instruction(instruction),   // Instruction fetched
   .led(led),
   .red(red),
   .green(green),
@@ -155,13 +143,16 @@ wire bge_cond = (branch_funct3 == 3'b101) && !alu_result[0]; // bge
 wire bltu_cond = (branch_funct3 == 3'b110) && alu_result[0]; // bltu
 wire bgeu_cond = (branch_funct3 == 3'b111) && !alu_result[0]; // bgeu
 
+// Calculate branch target address (PC + immediate)
+assign branch_target = pc + imm_ext;
+
 // Take branch if any condition is true and branch signal is enabled
 assign take_branch = branch && (beq_cond || bne_cond || blt_cond || bge_cond || bltu_cond || bgeu_cond);
 
 // === PC MUX ===
 mux_2x1 pc_mux (
   .in0(pc_plus_4),
-  .in1(alu_result),
+  .in1(take_branch ? branch_target : alu_result),  // Use branch_target for branches, alu_result for jumps
   .sel(take_branch || jump),
   .out(pc_next)
 );
@@ -175,5 +166,8 @@ mux_4x1 rdv_mux (
   .sel(mem_to_reg),
   .out(write_data)
 );
+
+// === PC MUX Selector ===
+assign pc_mux_sel = take_branch || jump;
 
 endmodule

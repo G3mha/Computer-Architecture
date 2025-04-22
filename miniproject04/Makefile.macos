@@ -73,7 +73,7 @@ sim_imm_gen: tb/imm_gen_tb.sv src/cpu/imm_gen.sv
 	$(VVP) $(SIM_DIR)/imm_gen_tb.vvp
 
 $(SIM_DIR)/imm_gen_tb.vvp: $(TB_DIR)/imm_gen_tb.sv $(SRC_DIR)/cpu/imm_gen.sv
-	@mkdir -p $(SIM_DIR)
+	@if not exist $(SIM_DIR) mkdir $(SIM_DIR)
 	$(IVERILOG) -g2012 -I$(SRC_DIR) -o $@ $(TB_DIR)/imm_gen_tb.sv $(SRC_DIR)/cpu/imm_gen.sv
 
 .PHONY: sim_register_file
@@ -83,7 +83,7 @@ sim_register_file: tb/register_file_tb.sv src/cpu/register_file.sv
 	$(VVP) $(SIM_DIR)/register_file_tb.vvp
 
 $(SIM_DIR)/register_file_tb.vvp: $(TB_DIR)/register_file_tb.sv $(SRC_DIR)/cpu/register_file.sv
-	@mkdir -p $(SIM_DIR)
+	@if not exist $(SIM_DIR) mkdir $(SIM_DIR)
 	$(IVERILOG) -g2012 -I$(SRC_DIR) -o $@ $(TB_DIR)/register_file_tb.sv $(SRC_DIR)/cpu/register_file.sv
 
 .PHONY: sim_instruction_decoder

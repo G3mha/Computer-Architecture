@@ -91,7 +91,8 @@ module j_type_tb;
     
     // Optional: Dump waveforms
     initial begin
-        $dumpfile("j_type_tb.vcd");
+        $dumpfile("sim/j_type_tb.vcd");
         $dumpvars(0, j_type_tb);
     end
+
 endmodule
