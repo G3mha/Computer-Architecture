@@ -312,16 +312,93 @@ The `imm_gen.sv` module handles different immediate formats:
 ---
 
 ## Testbench and Verification
-1. **Testbench Setup**  
-   - Describe the testbench environment (files, top test module, how you instantiate `top.sv`).
-   - Mention any memory initialization methods (e.g., `$readmemh` or $readmemb).
 
-2. **Verification Approach**  
-   - List the types of tests you performed (random, directed, or standard RISC-V tests).
-   - If you have waveforms or logs, reference them here.
+### Testbench Setup
+
+Our verification environment consists of two layers of testbenches:
+
+1. **Component-Level Testbenches**
+   - `alu_tb.sv`: Verifies each ALU operation with various test vectors
+   - `imm_gen_tb.sv`: Tests immediate value generation for all instruction formats
+   - `register_file_tb.sv`: Validates register file read/write functionality
+   - `instruction_decoder_tb.sv`: Checks proper control signal generation
+
+2. **Instruction-Type Testbenches**
+   - `r_type_tb.sv`, `i_type_tb.sv`, `s_type_tb.sv`, `b_type_tb.sv`, `u_type_tb.sv`, `j_type_tb.sv`: Verify functionality of specific instruction types
+
+All testbenches use a consistent approach:
+
+- Timescale of `1ns/1ps` for simulation precision
+- Clock generation with 10ns period (100MHz)
+- Direct instantiation of the DUT (`top` module or individual components)
+- Memory initialization using `$readmemh` to load test programs
+- Expected register values loaded from reference files for verification
+
+Example from `r_type_tb.sv`:
+
+```systemverilog
+// Memory file for this test
+localparam PROGRAM_FILE = "program/input/test_r_type.mem";
+localparam EXPECTED_FILE = "program/expected/test_r_type.mem";
+
+// Instantiate the processor
+top #(
+   .INIT_FILE(PROGRAM_FILE)
+) dut (
+   .clk(clk),
+   .reset(reset),
+   .led(led),
+   .red(red),
+   .green(green),
+   .blue(blue)
+);
+
+// Load expected values
+initial begin
+   $readmemh(EXPECTED_FILE, expected_reg);
+end
+```
+
+### Verification Approach
+
+Our verification strategy employs:
+
+1. **Test Program Structure**
+   - Input programs in `program/input/` (e.g., `test_r_type.mem`)
+   - Expected results in `program/expected/` (e.g., `expected_r_type.mem`)
+   - Programs exercise specific instruction functionality
+
+2. **Results Analysis**
+   - Register value comparison after execution
+   - Pass/fail reporting for each test case
+   - Use of `$display` for logging results
+
+3. **Coverage**
+   - Tests for all implemented RV32I instructions
+   - Verification of ALU operations
+   - Validation of control path signals
+   - Memory access operations
+
+Example of verification checking from `i_type_tb.sv`:
+
+```systemverilog
+// Check results
+$display("Checking register values after I-type instructions execution");
+
+for (int i = 0; i <= 9; i++) begin
+   if (reg_values[i] !== expected_reg[i]) begin
+      $display("ERROR: Register x%0d = 0x%8h, Expected = 0x%8h", 
+               i, reg_values[i], expected_reg[i]);
+   } else begin
+      $display("PASS: Register x%0d = 0x%8h", i, reg_values[i]);
+   }
+end
+```
+
+TODO: If you have waveforms or logs, reference them here.
 
 ---
 
 ## Simulation Results
-Include screenshots or references to your waveforms (VCD, FST, etc.) from Icarus Verilog or another simulator. For example:
 
+TODO: Include screenshots or references to your waveforms (VCD, FST, etc.) from Icarus Verilog or another simulator.
