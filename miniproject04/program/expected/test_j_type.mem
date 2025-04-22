@@ -1,9 +1,9 @@
 00000000 // x0 = 0
-0000000C // x1 ≈ PC+4 at jal instruction
+0000000C // x1 ≈ PC+4 at first jal instruction
 00000002 // x2 = 2
 00000000 // x3 = 0 (skipped)
-00000000 // x4 = 0 (skipped)
+00000024 // x4 ≈ PC+4 at second jal instruction
 00000005 // x5 = 5
-00000024 // x6 ≈ PC+4 at jalr instruction
+00000000 // x6 = 0 (not used)
 00000000 // x7 = 0 (skipped)
 00000007 // x8 = 7

@@ -145,8 +145,20 @@ memory #(
   .blue(blue)
 );
 
-assign take_branch = branch && zero_flag;
+// === Branch Control Logic ===
+wire [2:0] branch_funct3 = instruction[14:12];
 
+wire beq_cond = (branch_funct3 == 3'b000) && zero_flag;      // beq
+wire bne_cond = (branch_funct3 == 3'b001) && !zero_flag;     // bne
+wire blt_cond = (branch_funct3 == 3'b100) && alu_result[0];  // blt
+wire bge_cond = (branch_funct3 == 3'b101) && !alu_result[0]; // bge
+wire bltu_cond = (branch_funct3 == 3'b110) && alu_result[0]; // bltu
+wire bgeu_cond = (branch_funct3 == 3'b111) && !alu_result[0]; // bgeu
+
+// Take branch if any condition is true and branch signal is enabled
+assign take_branch = branch && (beq_cond || bne_cond || blt_cond || bge_cond || bltu_cond || bgeu_cond);
+
+// === PC MUX ===
 mux_2x1 pc_mux (
   .in0(pc_plus_4),
   .in1(alu_result),
