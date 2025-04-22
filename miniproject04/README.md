@@ -231,9 +231,83 @@ Explain how the **memory.sv** module is connected to the processor and how you i
 ---
 
 ## Instruction Set Implementation
-Detail how each instruction type (R, I, S, B, U, J) is supported:
-- Refer to the **instruction_decoder.sv** and **imm_gen.sv** if relevant.
-- Note any special handling or corner cases (e.g., shift instructions, immediate sign extension).
+
+This processor implements the RV32I base instruction set (with exceptions noted in the project requirements). The implementation supports all standard instruction types (R, I, S, B, U, J) through the `instruction_decoder.sv` and `imm_gen.sv` modules.
+
+### Instruction Decoding
+
+The `instruction_decoder.sv` extracts instruction fields (opcode, funct3, funct7) and generates appropriate control signals:
+
+- **alu_op**: Determines ALU operation based on instruction type and function codes
+- **reg_write**: Enables register file writes for instructions that modify registers
+- **alu_src**: Selects ALU input sources (register data or immediate values)
+- **mem_read/mem_write**: Controls memory access operations
+- **mem_to_reg**: Selects data to write back to registers
+- **branch/jump**: Controls program flow changes
+
+### Immediate Generation
+
+The `imm_gen.sv` module handles different immediate formats:
+
+- **I-type**: Sign-extends 12-bit immediate for loads, ALU operations, and JALR
+- **S-type**: Reconstructs immediate from instruction bits [31:25] and [11:7]
+- **B-type**: Forms 13-bit immediate with LSB=0 for aligned addresses
+- **U-type**: Places 20-bit immediate in upper bits [31:12]
+- **J-type**: Constructs 21-bit immediate for jump targets
+
+### Special Handling
+
+- **Shift Instructions**: For shift operations, only the lower 5 bits of the second operand are used
+- **Branch Instructions**: Comparison operations set the zero flag for conditional branching
+- **Jump Instructions**: Return addresses are stored in the destination register (rd)
+
+### Instruction Set
+
+| Type | Instruction | Syntax | Description |
+|------|------------|--------|-------------|
+| U-type | `lui` | `lui rd, imm` | Load Upper Immediate |
+| U-type | `auipc` | `auipc rd, imm` | Add Upper Immediate to PC |
+| J-type | `jal` | `jal rd, pcrel_21` | Jump and Link |
+| I-type | `jalr` | `jalr rd, imm(rs1)` | Jump and Link Register |
+| B-type | `beq` | `beq rs1, rs2, pcrel_13` | Branch if Equal |
+| B-type | `bne` | `bne rs1, rs2, pcrel_13` | Branch if Not Equal |
+| B-type | `blt` | `blt rs1, rs2, pcrel_13` | Branch if Less Than |
+| B-type | `bge` | `bge rs1, rs2, pcrel_13` | Branch if Greater Than or Equal |
+| B-type | `bltu` | `bltu rs1, rs2, pcrel_13` | Branch if Less Than (Unsigned) |
+| B-type | `bgeu` | `bgeu rs1, rs2, pcrel_13` | Branch if Greater Than or Equal (Unsigned) |
+| I-type | `lb` | `lb rd, imm(rs1)` | Load Byte |
+| I-type | `lh` | `lh rd, imm(rs1)` | Load Halfword |
+| I-type | `lw` | `lw rd, imm(rs1)` | Load Word |
+| I-type | `lbu` | `lbu rd, imm(rs1)` | Load Byte (Unsigned) |
+| I-type | `lhu` | `lhu rd, imm(rs1)` | Load Halfword (Unsigned) |
+| S-type | `sb` | `sb rs2, imm(rs1)` | Store Byte |
+| S-type | `sh` | `sh rs2, imm(rs1)` | Store Halfword |
+| S-type | `sw` | `sw rs2, imm(rs1)` | Store Word |
+| I-type | `addi` | `addi rd, rs1, imm` | Add Immediate |
+| I-type | `slti` | `slti rd, rs1, imm` | Set Less Than Immediate |
+| I-type | `sltiu` | `sltiu rd, rs1, imm` | Set Less Than Immediate (Unsigned) |
+| I-type | `xori` | `xori rd, rs1, imm` | XOR Immediate |
+| I-type | `ori` | `ori rd, rs1, imm` | OR Immediate |
+| I-type | `andi` | `andi rd, rs1, imm` | AND Immediate |
+| I-type | `slli` | `slli rd, rs1, shamt` | Shift Left Logical Immediate |
+| I-type | `srli` | `srli rd, rs1, shamt` | Shift Right Logical Immediate |
+| I-type | `srai` | `srai rd, rs1, shamt` | Shift Right Arithmetic Immediate |
+| R-type | `add` | `add rd, rs1, rs2` | Add |
+| R-type | `sub` | `sub rd, rs1, rs2` | Subtract |
+| R-type | `sll` | `sll rd, rs1, rs2` | Shift Left Logical |
+| R-type | `slt` | `slt rd, rs1, rs2` | Set Less Than |
+| R-type | `sltu` | `sltu rd, rs1, rs2` | Set Less Than (Unsigned) |
+| R-type | `xor` | `xor rd, rs1, rs2` | XOR |
+| R-type | `srl` | `srl rd, rs1, rs2` | Shift Right Logical |
+| R-type | `sra` | `sra rd, rs1, rs2` | Shift Right Arithmetic |
+| R-type | `or` | `or rd, rs1, rs2` | OR |
+| R-type | `and` | `and rd, rs1, rs2` | AND |
+
+**Note:** As per project requirements, the following instructions are excluded from implementation:
+
+- `ecall`, `ebreak` (environment calls)
+- `csrrw`, `csrrs`, `csrrc`, `csrrwi`, `csrrsi`, `csrrci` (control and status register instructions)
+- Atomic read/write instructions
 
 ---
 
