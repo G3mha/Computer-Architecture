@@ -42,20 +42,77 @@ Design a 32-bit RISC-V integer microprocessor with a von Neumann architecture th
 
 The instructions for this project are available [here](docs/instructions.md).
 
-## How to Build
+## How to Use
+
+### Simulation
+
+To verify the processor functionality through simulation:
 
 ```bash
-# Build for FPGA
+# Run all simulations
+make test
+
+# Component-level simulations
+make sim_alu          # Test ALU operations
+make sim_imm_gen      # Test immediate generation
+make sim_register_file    # Test register file
+make sim_instruction_decoder  # Test instruction decoder
+
+# Instruction type simulations
+make sim_r_type       # Test R-type instructions
+make sim_i_type       # Test I-type instructions
+make sim_s_type       # Test S-type instructions
+make sim_b_type       # Test B-type instructions
+make sim_u_type       # Test U-type instructions
+make sim_j_type       # Test J-type instructions
+
+# View waveforms (after running simulation)
+make wave_r_type      # Open GTKWave with R-type simulation results
+```
+
+The test results are displayed in the console, showing which register values match expected outputs from the reference files in `program/expected/`.
+
+### Synthesis
+
+To build the processor for FPGA implementation:
+
+```bash
+# Synthesize the design
 make build
 
-# Run simulations
-make sim
+# The build process:
+# 1. Synthesizes using Yosys (generates .json)
+# 2. Place and route using NextPNR (generates .asc)
+# 3. Creates binary bitstream using IcePack (generates .bin)
+```
 
-# Run cocotb tests
-make cocotb
+The output files are stored in the `build/` directory, with the final bitstream at `build/top.bin`.
 
-# Program FPGA
+### Testing
+
+The testing framework uses:
+
+1. **Component tests** - Verify individual modules function correctly
+2. **Instruction tests** - Validate processor execution of different instruction types
+
+Each test program is located in `program/input/`, with corresponding expected outputs in `program/expected/`.
+
+```bash
+# Run all tests
+make test
+
+# Program the FPGA
 make prog
+
+# Clean build and simulation artifacts
+make clean
+```
+
+For writing custom test programs, use the RISC-V assembler tools:
+
+```bash
+# Assemble and generate memory file
+./tools/memgen.py program/your_program.S -o program/your_program.mem
 ```
 
 ## Design Specifications
@@ -131,15 +188,6 @@ Below is an **overview** of each SystemVerilog file in this project. Include det
    -  mem_to_reg (2-bit): Determines the data routing from memory to the register file.
    -  branch (1-bit): Indicates if the current instruction is a branch instruction.
    -  jump (1-bit): Indicates if the instruction is a jump instruction.
-
-- **R-Type**  
-- **I-Type**  
-- **S-Type**  
-- **B-Type**  
-- **U-Type**  
-- **J-Type**  
-
-![RV32I Instruction Table](docs/img/instruction_table.png)
 
 
 ### instruction_register.sv
