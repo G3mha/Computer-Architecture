@@ -529,6 +529,10 @@ for (int i = 0; i <= 9; i++) begin
 end
 ```
 
+The GTKWave waveform viewer is used to visualize simulation results, like below:
+
+![GTKWave](./docs/img/gtkwave.jpg)
+
 ---
 
 ## Simulation Results
