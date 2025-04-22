@@ -514,8 +514,6 @@ for (int i = 0; i <= 9; i++) begin
 end
 ```
 
-TODO: If you have waveforms or logs, reference them here.
-
 ---
 
 ## Simulation Results
