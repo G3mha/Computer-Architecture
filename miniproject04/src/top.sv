@@ -16,6 +16,7 @@ module top #(
 logic [31:0] pc;
 logic [31:0] pc_next;
 logic [31:0] pc_plus_4;
+logic [31:0] branch_target;  // Branch target address
 logic pc_write = 1'b1;  // Always enabled for single-cycle
 
 // === Instruction Memory and Decoding ===
@@ -142,13 +143,16 @@ wire bge_cond = (branch_funct3 == 3'b101) && !alu_result[0]; // bge
 wire bltu_cond = (branch_funct3 == 3'b110) && alu_result[0]; // bltu
 wire bgeu_cond = (branch_funct3 == 3'b111) && !alu_result[0]; // bgeu
 
+// Calculate branch target address (PC + immediate)
+assign branch_target = pc + imm_ext;
+
 // Take branch if any condition is true and branch signal is enabled
 assign take_branch = branch && (beq_cond || bne_cond || blt_cond || bge_cond || bltu_cond || bgeu_cond);
 
 // === PC MUX ===
 mux_2x1 pc_mux (
   .in0(pc_plus_4),
-  .in1(alu_result),
+  .in1(take_branch ? branch_target : alu_result),  // Use branch_target for branches, alu_result for jumps
   .sel(take_branch || jump),
   .out(pc_next)
 );
