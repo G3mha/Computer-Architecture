@@ -303,9 +303,28 @@ The datapath is controlled by multiplexers that select between data sources base
 ---
 
 ## Memory and Peripheral Integration
-Explain how the **memory.sv** module is connected to the processor and how you interface with peripherals:
-- Memory map regions (e.g., 0x0000 to 0x1FFF for 8kB memory, higher addresses for peripherals).
-- Interaction with LED PWM controllers and timers (if you have separate modules or are stubbing them out).
+
+The memory module serves both as program/data memory and as an interface to peripherals through memory-mapped I/O. The memory is organized as follows:
+
+- **Physical Memory (8kB)**: Addresses 0x00000000 to 0x00001FFF implement 2048 words (8kB) of actual memory for instructions and data, accessible in word, half-word, or byte sizes with proper alignment requirements.
+
+- **Memory-Mapped Peripherals**: Higher addresses (specifically in the 0xFFFFFFxx range) are mapped to hardware peripherals:
+  - 0xFFFFFFFF: User LED PWM controller (R/W, 8-bit)
+  - 0xFFFFFFFE: RED LED PWM controller (R/W, 8-bit)
+  - 0xFFFFFFFD: GREEN LED PWM controller (R/W, 8-bit)
+  - 0xFFFFFFFC: BLUE LED PWM controller (R/W, 8-bit)
+  - 0xFFFFFFF8: Millisecond timer counter (R, 32-bit)
+  - 0xFFFFFFF4: Microsecond timer counter (R, 32-bit)
+
+The PWM controllers and timers are implemented directly within the memory module rather than as separate modules. The memory module handles:
+
+1. Regular memory reads/writes using the address decoding logic in the `always_ff` blocks
+2. LED brightness control using PWM counters that compare against the stored 8-bit values
+3. Timer functionality with counters that increment based on clock cycles
+
+For example, writing a value to address 0xFFFFFFFF adjusts the PWM duty cycle for the user LED. The implementation uses an 8-bit counter (`pwm_counter`) that continuously increments, and the LED output is high when this counter is less than the stored PWM value, creating the variable brightness effect.
+
+The timers are implemented with overflow counters (`millis_counter` and `micros_counter`) that increment the respective timer values when they overflow, providing millisecond and microsecond timing capabilities since processor startup.
 
 ---
 
