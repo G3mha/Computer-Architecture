@@ -30,11 +30,11 @@ module ImmGen (
 
             7'b1101111: // J-type (JAL)
                 ImmExt = {
-                {12{instruction[31]}}, // Sign extension (12 bits)
-                instruction[19:12],    // imm[19:12]
-                instruction[20],       // imm[11]
-                instruction[30:21],    // imm[10:1]
-                1'b0                   // imm[0] (LSB)
+                  {12{instruction[31]}}, // Sign extension (12 bits)
+                  instruction[19:12],    // imm[19:12]
+                  instruction[20],       // imm[11]
+                  instruction[30:21],    // imm[10:1]
+                  1'b0                   // imm[0] (LSB)
                 };
 
             default:

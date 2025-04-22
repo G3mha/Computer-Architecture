@@ -128,7 +128,6 @@ sim_j_type: tb/j_type_tb.sv $(SV_FILES)
 	$(IVERILOG) -g2012 -I$(SRC_DIR) -o $(SIM_DIR)/j_type_tb.vvp $^
 	$(VVP) $(SIM_DIR)/j_type_tb.vvp
 
-
 .PHONY: wave_alu
 wave_alu: $(SIM_DIR)/alu_tb.vcd
 	$(GTKWAVE) $< &
