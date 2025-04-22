@@ -40,6 +40,7 @@ module ImmGen (
             default:
                 ImmExt = 32'b0;
         endcase
+
     end
 
 endmodule

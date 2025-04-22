@@ -94,4 +94,5 @@ module j_type_tb;
         $dumpfile("j_type_tb.vcd");
         $dumpvars(0, j_type_tb);
     end
+
 endmodule

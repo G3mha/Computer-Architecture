@@ -1,13 +1,15 @@
-module instruction_decoder(
-    input  logic [31:0] instruction,    // Full 32-bit instruction
-    output logic [3:0]  alu_op,         // Encoded ALU operation
-    output logic        reg_write,      // Register file write enable
-    output logic [1:0]  alu_src,        // ALU source selection
-    output logic        mem_read,       // Memory read enable
-    output logic        mem_write,      // Memory write enable
-    output logic [1:0]  mem_to_reg,     // Memory to register routing
-    output logic        branch,         // Branch instruction flag
-    output logic        jump            // Jump instruction flag
+module instruction_decoder (
+    input  logic [31:0] instruction,
+    input  logic [31:0] pc,        // Add this line
+    input  logic [31:0] imm_ext,   // Add this line
+    output logic [3:0]  alu_op,
+    output logic        reg_write,
+    output logic [1:0]  alu_src,
+    output logic        mem_read,
+    output logic        mem_write,
+    output logic [1:0]  mem_to_reg,
+    output logic        branch,
+    output logic        jump
 );
     // Extract instruction fields
     logic [6:0] opcode;
@@ -122,13 +124,13 @@ module instruction_decoder(
             end
 
             7'b1101111: begin // J-type instruction: JAL
-                reg_write = 1'b1;    // Write to register
-                alu_src   = 2'b11;   // Use PC and imm_ext
-                alu_op    = 4'b0000; // ADD for target address calculation
-                mem_read  = 1'b0;    // No memory access
-                mem_write = 1'b0;    // No memory access
-                mem_to_reg = 2'b10;  // Select PC+4
-                jump      = 1'b1;    // Enable jump
+                reg_write = 1'b1;
+                alu_src   = 2'b11;
+                alu_op    = 4'b0000;
+                mem_read  = 1'b0;
+                mem_write = 1'b0;
+                mem_to_reg = 2'b10;
+                jump      = 1'b1;
             end
 
             7'b1100111: begin // I-type instruction: JALR

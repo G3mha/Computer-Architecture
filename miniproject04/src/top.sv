@@ -8,7 +8,8 @@ module top #(
   output logic led,
   output logic red,
   output logic green,
-  output logic blue
+  output logic blue,
+  output logic [31:0] ImmExt
 );
 
 // === Program Counter and Control Signals ===
@@ -18,7 +19,6 @@ logic [31:0] pc_plus_4;
 logic pc_write = 1'b1;  // Always enabled for single-cycle
 
 // === Instruction Memory and Decoding ===
-logic [31:0] instruction_mem_data;
 logic [31:0] instruction;
 logic ir_write = 1'b1;  // Always enabled for single-cycle
 
@@ -36,6 +36,7 @@ logic take_branch;
 logic [31:0] imm_ext;
 logic [31:0] mem_read_data;
 logic [31:0] write_data;
+logic pc_mux_sel;
 
 // === Program Counter ===
 program_counter pc_unit (
@@ -52,26 +53,11 @@ pc_adder pc_incr (
   .pc_plus_4(pc_plus_4)
 );
 
-// === Instruction Memory ===
-instruction_memory #(
-  .INIT_FILE(INIT_FILE)
-) instruction_mem (
-  .address(pc),
-  .instruction(instruction_mem_data)
-);
-
-// === Instruction Register ===
-instruction_register ir (
-  .clk(clk),
-  .reset(reset),
-  .ir_write(ir_write),
-  .instruction_in(instruction_mem_data),
-  .instruction_out(instruction)
-);
-
 // === Instruction Decoder ===
 instruction_decoder decoder (
   .instruction(instruction),
+  .pc(pc),                // Connect PC
+  .imm_ext(imm_ext),      // Connect ImmExt
   .alu_op(alu_op),
   .reg_write(reg_write),
   .alu_src(alu_src),
@@ -133,12 +119,13 @@ memory #(
   .INIT_FILE(INIT_FILE)
 ) mem_unit (
   .clk(clk),
-  .write_mem(mem_write),
-  .funct3(instruction[14:12]),
-  .write_address(alu_result),
-  .write_data(rs2_data),
-  .read_address(alu_result),
-  .read_data(mem_read_data),
+  .mem_read(mem_read),         // Read enable for data
+  .mem_write(mem_write),       // Write enable for data
+  .address(pc),                // Address for instruction fetch or data access
+  .funct3(instruction[14:12]), // Function code for data access
+  .write_data(rs2_data),       // Data to write
+  .read_data(mem_read_data),   // Data read
+  .instruction(instruction),   // Instruction fetched
   .led(led),
   .red(red),
   .green(green),
@@ -175,5 +162,8 @@ mux_4x1 rdv_mux (
   .sel(mem_to_reg),
   .out(write_data)
 );
+
+// === PC MUX Selector ===
+assign pc_mux_sel = take_branch || jump;
 
 endmodule
