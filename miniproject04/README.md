@@ -1,5 +1,7 @@
 # ENGR 3410: Miniproject 4 Report
 
+Repository: [Computer Architecture GitHub](https://github.com/G3mha/Computer-Architecture/tree/main/miniproject04)
+
 **Design an unpipelined, multicycle, 32-bit RISC-V integer microprocessor with a
 von Neumann architecture**  
 **Due Date:** April 14, 2025  
