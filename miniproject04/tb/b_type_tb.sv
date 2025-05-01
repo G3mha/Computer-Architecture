@@ -19,7 +19,7 @@ module b_type_tb;
     localparam EXPECTED_FILE = "program/expected/test_branch.mem";
     
     // Expected register values - set proper size
-    logic [31:0] expected_reg [0:7]; // Check documentation for actual expected range
+    logic [31:0] expected_reg [0:8]; // Update size to match expected values file (x0-x8)
     
     // Register values from design
     logic [31:0] reg_values [0:31];
@@ -47,12 +47,12 @@ module b_type_tb;
     // Monitor PC and branch operations
     assign pc_current = dut.pc;
     assign pc_next = dut.pc_next;
-    assign branch_taken = dut.branch && dut.zero_flag;
+    assign branch_taken = dut.take_branch;
     
     // Monitor branch decisions
     always @(posedge clk) begin
         if (dut.branch) begin
-            if (dut.zero_flag)
+            if (dut.take_branch)
                 $display("Branch taken at PC=0x%8h -> Next PC=0x%8h", pc_current, pc_next);
             else
                 $display("Branch not taken at PC=0x%8h", pc_current);
@@ -62,7 +62,7 @@ module b_type_tb;
     // Load expected values
     initial begin
         // Clear array first
-        for (int i = 0; i < 8; i++) begin
+        for (int i = 0; i < 9; i++) begin
             expected_reg[i] = 32'h0;
         end
         $readmemh(EXPECTED_FILE, expected_reg);
@@ -76,11 +76,10 @@ module b_type_tb;
         clk = 0;
         reset = 1;
         
-        // Apply reset for 20ns
-        #20;
-        reset = 0;
+        // Apply reset
+        #20 reset = 0;
         
-        // Run for more cycles to ensure all instructions execute
+        // Run test for a while to allow execution
         repeat(250) @(posedge clk);
         
         // Check results
@@ -91,7 +90,7 @@ module b_type_tb;
         fail_count = 0;
 
         // Check registers according to expected_test_branch.mem file
-        for (int i = 0; i <= 7; i++) begin
+        for (int i = 0; i <= 8; i++) begin
             if (reg_values[i] !== expected_reg[i]) begin
                 $display("ERROR: Register x%0d = 0x%8h, Expected = 0x%8h", 
                          i, reg_values[i], expected_reg[i]);
@@ -102,15 +101,6 @@ module b_type_tb;
             end
         end
         
-        // Special case for register x8
-        if (reg_values[8] == 32'h4) begin
-            $display("PASS: Register x8 = 0x%8h (expected value)", reg_values[8]);
-            pass_count++;
-        end else begin
-            $display("ERROR: Register x8 = 0x%8h, Expected = 0x00000004", reg_values[8]);
-            fail_count++;
-        end
-        
         $display("Test summary: %0d passed, %0d failed", pass_count, fail_count);
         
         $display("B-type instruction test completed");
@@ -119,7 +109,7 @@ module b_type_tb;
     
     // Dump waveforms
     initial begin
-        $dumpfile("b_type_tb.vcd");
+        $dumpfile("sim/b_type_tb.vcd");
         $dumpvars(0, b_type_tb);
     end
 endmodule
