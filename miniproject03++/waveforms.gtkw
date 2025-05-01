@@ -1,0 +1,47 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Mon Apr 28 17:10:38 2025
+[*]
+[dumpfile] "C:\Users\ohimsworth\Documents\Computer-Architecture\miniproject03++\tb_top.vcd"
+[dumpfile_mtime] "Mon Apr 28 16:22:53 2025"
+[dumpfile_size] 21638
+[savefile] "C:\Users\ohimsworth\Documents\Computer-Architecture\miniproject03++\waveforms.gtkw"
+[timestart] 0
+[size] 1920 993
+[pos] -183 -180
+*-12.007651 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_top.
+[sst_width] 246
+[signals_width] 166
+[sst_expanded] 1
+[sst_vpaned_height] 295
+@28
+tb_top.uut.clk
+tb_top.uut.boot_n
+tb_top.uut.sw_n
+tb_top.uut.waveform_sel[1:0]
+tb_top.uut.freq_sel[1:0]
+@22
+tb_top.uut.phase_acc[31:0]
+tb_top.uut.phase_inc[31:0]
+tb_top.uut.data_sine[9:0]
+tb_top.uut.data_tri[9:0]
+@28
+tb_top.uut.data_sq
+@800023
+tb_top.uut.dac_out[9:0]
+@29
+(0)tb_top.uut.dac_out[9:0]
+(1)tb_top.uut.dac_out[9:0]
+(2)tb_top.uut.dac_out[9:0]
+(3)tb_top.uut.dac_out[9:0]
+(4)tb_top.uut.dac_out[9:0]
+(5)tb_top.uut.dac_out[9:0]
+(6)tb_top.uut.dac_out[9:0]
+(7)tb_top.uut.dac_out[9:0]
+(8)tb_top.uut.dac_out[9:0]
+(9)tb_top.uut.dac_out[9:0]
+@1001201
+-group_end
+[pattern_trace] 1
+[pattern_trace] 0
