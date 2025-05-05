@@ -7,9 +7,7 @@ module top(
     output logic [9:0] dac_out      // 10-bit to R-2R ladder
 );
 
-  //-------------------------------------------------------------------------
-  // 1) Button Synchronizers & Edge Detectors
-  //-------------------------------------------------------------------------
+  //  Button Synchronizers & Edge Detectors
   logic boot_sync0, boot_sync1, boot_r;
   logic sw_sync0,   sw_sync1,   sw_r;
 
@@ -21,18 +19,16 @@ module top(
     sw_sync1   <= sw_sync0;
   end
 
-  // detect rising edge (single pulse per press)
+  // detect rising edge (button press)
   always_ff @(posedge clk) begin
     boot_r <= boot_sync1 & ~boot_r;
     sw_r   <= sw_sync1   & ~sw_r;
   end
 
-  //-------------------------------------------------------------------------
-  // 2) Control Registers
-  //-------------------------------------------------------------------------
+
   // waveform: 00=sine, 01=triangle, 10=square
   logic [1:0] waveform_sel = 2'b00;  
-  // freq index: 0→1 kHz, 1→2 kHz, 2→5 kHz, 3→10 kHz
+  // freq index: 0->1 kHz, 1->2 kHz, 2->5 kHz, 3->10 kHz
   logic [1:0] freq_sel     = 2'b00;  
 
   always_ff @(posedge clk) begin
@@ -40,11 +36,9 @@ module top(
     if ( sw_r)   freq_sel     <= (freq_sel     == 2'd3) ? 2'd0 : freq_sel     + 1;
   end
 
-  //-------------------------------------------------------------------------
-  // 3) Phase–Increment Lookup
-  //-------------------------------------------------------------------------
+  
   // sample clock = 12 MHz
-  localparam PH1 = 32'd357_913;   // ~1 kHz: 1e3*2^32/12e6
+  localparam PH1 = 32'd357_913;   // ~1 kHz 
   localparam PH2 = 32'd715_827;   // ~2 kHz
   localparam PH5 = 32'd1_789_574; // ~5 kHz
   localparam PH10= 32'd3_578_139; // ~10 kHz
@@ -60,43 +54,39 @@ module top(
     endcase
   end
 
-  //-------------------------------------------------------------------------
-  // 4) Phase Accumulator
-  //-------------------------------------------------------------------------
+
   logic [31:0] phase_acc = 32'd0;
 
   always_ff @(posedge clk) phase_acc <= phase_acc + phase_inc;
 
 
-  //-------------------------------------------------------------------------
-  // 5) Waveform Generators
-  //-------------------------------------------------------------------------
-  // — Sine via quarter-memory + symmetry
+
+  // Waveform Generators
+  //Sine via quarter-memory + symmetry
   logic [9:0] data_sine;
   sine_gen sin_i (
     .clk   (clk),
-    .phase (phase_acc[31:23]),  // top 9 bits → 0..511
+    .phase (phase_acc[31:23]),  
     .out   (data_sine)
   );
 
-  // — Triangle: up/down ramp over full cycle
+  //  Triangle: up/down ramp over full cycle
   logic [9:0] data_tri;
   assign data_tri = phase_acc[31]
                   ? (10'd1023 - phase_acc[30:21]) // descending
                   : phase_acc[30:21];            // ascending
 
-  // — Square: MSB of phase_acc
+  // Square: MSB of phase_acc
   logic data_sq;
   assign data_sq = phase_acc[31];
 
-  //-------------------------------------------------------------------------
-  // 6) Output Multiplexer
-  //-------------------------------------------------------------------------
+
+  // Output Multiplexer
   always_comb begin
     case (waveform_sel)
       2'b00: dac_out = data_sine;
       2'b01: dac_out = data_tri;
-      2'b10: dac_out = {10{data_sq}}; // FULL 10-bit wide square wave
+      2'b10: dac_out = {10{data_sq}}; 
       default: dac_out = data_sine;
     endcase
 end
