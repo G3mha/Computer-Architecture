@@ -6,8 +6,6 @@ Due: **May 7 2025**
 
 For the full assignment brief, see the original [MP5 proposal](https://github.com/G3mha/Computer-Architecture/blob/main/miniproject05/README.pdf).
 
-Repository:[Computer Architecture GitHub](https://github.com/G3mha/Computer-Architecture/tree/main/miniproject03%2B%2B)
-
 ---
 
 ## Circuit Design
@@ -16,7 +14,7 @@ This project expands the MP3 sine-wave by adding **square** and **triangle** out
 
 > The physical setup on the *iceBlinkPico* breadboard is shown below:
 >
-> ![Breadboard implementation](/miniproject03/img/circuit.jpg)
+> ![Breadboard implementation](./oscilloscope/circuit.jpg)
 
 Key design choices:
 
@@ -115,7 +113,7 @@ For each experiment three figures are generated:
 
 | Time‑Domain                           | Frequency‑Domain                   | Subplots                            |
 | ------------------------------------- | ---------------------------------- | ---------------------------------- |
-| ![sine waveforms](/miniproject03++/sineplots/sine_waveforms.png) | ![sine FFT](/miniproject03++/sineplots/sine_fft_subplots.png) | ![sine subplot](/miniproject03++/sineplots/sine_subplots.png) |
+| ![sine waveforms](./sineplots/sine_waveforms.png) | ![sine FFT](./sineplots/sine_fft_subplots.png) | ![sine subplot](./sineplots/sine_subplots.png) |
 
 
 
@@ -123,7 +121,7 @@ For each experiment three figures are generated:
 
 | Time‑Domain                         | Frequency‑Domain                 | Subplots                          |
 | ----------------------------------- | -------------------------------- | -------------------------------- |
-| ![tri waveforms](/miniproject03++/triplots/tri_waveforms.png) | ![tri FFT](/miniproject03++/triplots/tri_fft_subplots.png) | ![tri subplot](/miniproject03++/triplots/tri_subplots.png) |
+| ![tri waveforms](./triplots/tri_waveforms.png) | ![tri FFT](./triplots/tri_fft_subplots.png) | ![tri subplot](./triplots/tri_subplots.png) |
 
 
 
@@ -131,7 +129,7 @@ For each experiment three figures are generated:
 
 | Time‑Domain                        | Frequency‑Domain                | Subplots                         |
 | ---------------------------------- | ------------------------------- | ------------------------------- |
-| ![sq waveforms](/miniproject03++/sqrplots/sqr_waveforms.png) | ![sq FFT](/miniproject03++/sqrplots/sqr_fft_subplots.png) | ![sq subplot](/miniproject03++/sqrplots/sqr_subplots.png) |
+| ![sq waveforms](./sqrplots/sqr_waveforms.png) | ![sq FFT](./sqrplots/sqr_fft_subplots.png) | ![sq subplot](./sqrplots/sqr_subplots.png) |
 
 
 ---
