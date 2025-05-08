@@ -6,6 +6,8 @@ Due: **May 7 2025**
 
 For the full assignment brief, see the original [MP5 proposal](https://github.com/G3mha/Computer-Architecture/blob/main/miniproject05/README.pdf).
 
+Repository: [Computer Architecture GitHub](https://github.com/G3mha/Computer-Architecture/tree/main/miniproject03)
+
 ---
 
 ## Circuit Design
